@@ -3,7 +3,7 @@ export type ThemeMode = "light" | "dark" | "auto";
 export const LIGHT_MODE = "light",
 	DARK_MODE = "dark",
 	AUTO_MODE = "auto";
-export const DEFAULT_THEME: ThemeMode = AUTO_MODE;
+export const DEFAULT_THEME: ThemeMode = DARK_MODE;
 export const THEME_CHANGE_EVENT: string = "shirone:theme-change";
 
 export const WALLPAPER_MODE_KEY = "wallpaper-mode";
@@ -33,5 +33,5 @@ export const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 1;
 
 // Page width: rem. Single sidebar uses PAGE_WIDTH; dual-column
 // arrangement widens the frame one tier (resolved in responsive-utils).
-export const PAGE_WIDTH = 85;
+export const PAGE_WIDTH = 90;
 export const PAGE_WIDTH_DUAL = 96;

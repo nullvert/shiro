@@ -22,7 +22,7 @@ import { withUserConfig } from "../utils/config-overlay.ts";
 export const fabConfig: FabConfig = withUserConfig("fab", {
 	enable: true,
 	align: "end",
-	size: "regular",
+	size: "small",
 	offset: {
 		bottom: "var(--m3e-space-8)",
 		right: "var(--m3e-space-6)",
@@ -49,7 +49,7 @@ export const fabConfig: FabConfig = withUserConfig("fab", {
 		},
 		{
 			type: "home",
-			enable: true,
+			enable: false,
 			devices: ["mobile", "tablet"],
 			onlySubPages: true,
 		},

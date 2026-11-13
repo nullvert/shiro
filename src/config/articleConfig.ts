@@ -7,13 +7,13 @@ import { withUserConfig } from "../utils/config-overlay.ts";
 export const articleConfig: ArticleConfig = withUserConfig("article", {
 	lastUpdated: {
 		// 关闭后不渲染最后更新提示。
-		enable: true,
+		enable: false,
 		// 按 UTC 日历日计算；达到该天数当天开始显示，0 表示立即显示。
 		minimumAgeDays: 90,
 	},
 	discovery: {
 		// 总开关关闭后不计算、不渲染文章尾部的延伸阅读区域。
-		enable: true,
+		enable: false,
 		related: {
 			// 只展示至少共享一个标签或分类的文章。
 			enable: true,

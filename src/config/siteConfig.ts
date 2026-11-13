@@ -10,31 +10,31 @@ import { withUserConfig } from "../utils/config-overlay.ts";
  * 类型见 src/types/config.ts。
  */
 export const siteConfig: SiteConfig = withUserConfig("site", {
-	site: "https://shirone.mysqil.com/",
+	site: "https://nullvert.uz/",
 	base: "/",
-	title: "Shirone",
-	subtitle: "A Material 3 anime blog",
+	title: "nullvert",
+	subtitle: "личный техноблог",
 	// 电脑端顶栏标题与导航内容区域："left" 左对齐，"center" 居中。
 	topAppBar: {
 		contentAlign: "center",
 	},
 	// 显示设置面板控制：配置各项前端切换项的可见性（默认全部开启）。
 	displaySettings: {
-		colorStyle: true, // 是否展示配色风格 9 宫格
-		colorSpec: true, // 是否展示 Color Spec 调色规范切换
-		wallpaperMode: true, // 是否展示页面背景（纯色/横幅）切换
-		layoutMode: true, // 是否展示文章列表布局（列表/网格）切换
-		reduceMotion: true, // 是否展示减少动效切换
-		texture: true, // 是否展示背景纹理选择
+		colorStyle: false, // 是否展示配色风格 9 宫格
+		colorSpec: false, // 是否展示 Color Spec 调色规范切换
+		wallpaperMode: false, // 是否展示页面背景（纯色/横幅）切换
+		layoutMode: false, // 是否展示文章列表布局（列表/网格）切换
+		reduceMotion: false, // 是否展示减少动效切换
+		texture: false, // 是否展示背景纹理选择
 	},
 	lang: "en", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	// IANA time zone for precise post and moment timestamps. It is independent of lang.
-	timeZone: "Asia/Shanghai",
+	timeZone: "Asia/Tashkent",
 	themeColor: {
-		hue: 315, // Default hue 0-360. 站点设计默认粉紫（偏二次元）；262 紫 / 345 粉 也可选
+		hue: 160, // Default hue 0-360. 站点设计默认粉紫（偏二次元）；262 紫 / 345 粉 也可选
 		fixed: false, // Hide the theme color picker for visitors
 		// Dynamic Material 3 palette style (TonalSpot/Vibrant/Content/Expressive/Rainbow/FruitSalad/Monochrome/Neutral/Fidelity)
-		style: "tonalSpot",
+		style: "content",
 		// Design spec version: "2021" (MD3) or "2025" (M3 Expressive)。角色集一致，
 		// 差异仅在调色板派生（库的 colorSpec 静态为 2025 委托）
 		spec: "2025",
@@ -42,12 +42,12 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 	// 默认页面背景模式："banner" 使用壁纸横幅，"none" 使用主题纯色。
 	// 访客在“显示设置”中的选择会保存在浏览器中，并覆盖这里的默认值。
 	wallpaperMode: {
-		defaultMode: "banner",
+		defaultMode: "none",
 	},
 	// 页面背景纹理系统配置（5 大精美预设 + 零开销 HCT 动态取色）
 	texture: {
 		enable: true, // 是否启用背景纹理系统
-		defaultPreset: "starlight", // 默认纹理预设："none" | "starlight" | "cyber-dots" | "topography" | "geometric" | "sakura"
+		defaultPreset: "none", // 默认纹理预设："none" | "starlight" | "cyber-dots" | "topography" | "geometric" | "sakura"
 		defaultOpacity: 0.12, // 默认纹理浓度 (0.05 ~ 0.25)
 		allowMotion: true, // 是否允许背景微动效（开启 reduced-motion 时自动静止）
 	},
@@ -69,7 +69,7 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 		},
 		homeText: {
 			// 仅在首页 Banner 中显示，标题与副标题会上下居中排列。
-			enable: true,
+			enable: false,
 			title: "Shirone",
 			subtitle: [
 				"特別なことはないけど、君がいると十分です",
@@ -80,7 +80,7 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 			],
 			typewriter: {
 				// 副标题逐字显示；关闭后直接显示完整副标题。
-				enable: true,
+				enable: false,
 				// 打字速度（每个字符间隔，毫秒）。
 				speed: 100,
 				// 回退反向删除速度（每个字符间隔，毫秒）。
@@ -88,12 +88,12 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 				// 打字完成后停顿时间，单位为毫秒。
 				pauseTime: 2000,
 				// 完成后是否循环播放；关闭表示只播放一次。
-				loop: true,
+				loop: false,
 			},
 		},
 		carousel: {
 			// 是否开启多张图片自动轮播；多张图片时生效，单张图片时自动降级为静态展示。
-			enable: true,
+			enable: false,
 			// 轮播切换间隔时间（毫秒），运行时最小值限制为 3000ms。
 			interval: 6000,
 			// 交叉淡入淡出（Crossfade）过渡时长（毫秒，默认 1200ms）。
@@ -103,7 +103,7 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 		},
 		waves: {
 			// 在 Banner 底部渲染页面背景色水波纹；关闭后不输出波浪 DOM。
-			enable: true,
+			enable: false,
 		},
 	},
 	// Markdown 正文图片处理；仅匹配远程图片，不会产生额外网络请求或客户端代码。
@@ -117,7 +117,7 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 	},
 	progressIndicator: {
 		// 进度条预设样式：dual 双向扫描（官方默认双线）/ single 单向扫描（单线）
-		style: "dual",
+		style: "single",
 	},
 	favicon: [
 		// 浏览器标签页图标，路径相对于 public 目录。
