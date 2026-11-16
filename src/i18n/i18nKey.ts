@@ -301,6 +301,7 @@ enum I18nKey {
 	paginationJump = "paginationJump",
 	paginationLabel = "paginationLabel",
 
+	authorMenu = "authorMenu",
 	author = "author",
 	publishedAt = "publishedAt",
 	lastUpdatedNotice = "lastUpdatedNotice",

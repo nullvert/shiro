@@ -1,17 +1,16 @@
 <script lang="ts">
 /**
- * 动态卡片（分子）：单条动态的展示单元。
- * <article> 语义（非整卡链接）；头像/作者名链到作者页；
- * 正文为构建期渲染的 HTML（复用全局 .custom-md 排版）；
- * 图片交给 MomentGallery（网格 + 内联查看器两段式，灯箱走 Fancybox）。
+ * 动态卡片（分子）：Telegram-style 简约信息卡片。
+ * 去除冗余的头像/作者名，以内容为中心。
+ * 支持置顶/加密徽章、Markdown 正文、内联图片画廊，
+ * 右下角紧凑时间戳与状态信息。
  */
-import Avatar from "@components/atoms/display/Avatar.svelte";
 import Icon from "@components/atoms/display/Icon.svelte";
 import MomentGallery from "@components/molecules/MomentGallery.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import type { MomentItem } from "@utils/content-utils";
-import { formatDateToYYYYMMDDHHmm } from "@utils/date-utils";
+import { formatLocalizedDateTime } from "@utils/date-utils";
 import { reveal } from "@utils/motion";
 import type { Snippet } from "svelte";
 
@@ -33,72 +32,41 @@ let {
 	children,
 }: {
 	moment: MomentItem;
-	author: MomentAuthor;
+	author?: MomentAuthor;
 	delay?: number;
 	class?: string;
 	children?: Snippet;
 } = $props();
 
 const publishedAt = $derived(new Date(moment.published));
-const timeText = $derived(formatDateToYYYYMMDDHHmm(publishedAt));
+const timeText = $derived(formatLocalizedDateTime(publishedAt));
 </script>
 
 <article class="moment-card {className}" id="moment-{moment.id}" use:reveal={{ delay }}>
-	<header class="moment-card__header">
-		<a class="moment-card__author" href={author.url}>
-			<!-- 作者名紧邻头像可读，头像按装饰图处理（避免与 aria-label 冗余） -->
-			<Avatar
-				src={author.avatar}
-				srcset={author.avatarSrcset}
-				sizes="40px"
-				width={author.avatarWidth}
-				height={author.avatarHeight}
-				alt=""
-				size={40}
-				shape="circle"
-			/>
-			<span class="moment-card__name">{author.name}</span>
-		</a>
-
-		<div class="moment-card__badges">
-			{#if moment.encrypted}
-				<span class="moment-card__badge moment-card__badge--encrypted">
-					<Icon icon="material-symbols:lock-rounded" aria-hidden="true" />
-					{i18n(I18nKey.postEncryptedBadge)}
-				</span>
-			{/if}
-			{#if moment.mood}
-				<span class="moment-card__badge" aria-hidden="true">
-					<Icon icon={moment.mood} />
-				</span>
-			{/if}
-			{#if moment.pinned}
-				<span class="moment-card__badge moment-card__badge--pinned">
-					<Icon icon="material-symbols:keep-rounded" aria-hidden="true" />
-					{i18n(I18nKey.pinned)}
-				</span>
-			{/if}
+	{#if moment.pinned}
+		<div class="moment-card__pinned-pin" title={i18n(I18nKey.pinned)}>
+			<Icon icon="material-symbols:keep-rounded" aria-hidden="true" />
 		</div>
-
-		<time class="moment-card__time" datetime={moment.published}>{timeText}</time>
-	</header>
+	{/if}
 
 	{#if children}
 		{@render children()}
 	{:else}
+		{#if moment.images.length > 0}
+			<div class="moment-card__media">
+				<MomentGallery images={moment.images} />
+			</div>
+		{/if}
+
 		{#if moment.html.trim()}
 			<div class="moment-card__content custom-md">
-				<!-- 正文为构建期渲染产物（站点 markdown 插件链），非用户输入 -->
+				<!-- 正文为构建期渲染产物（站点 markdown 插件链） -->
 				{@html moment.html}
 			</div>
 		{/if}
 
-		{#if moment.images.length > 0}
-			<MomentGallery images={moment.images} />
-		{/if}
-
-		{#if moment.location || moment.tags.length > 0}
-			<footer class="moment-card__footer">
+		<footer class="moment-card__meta">
+			<div class="moment-card__tags-and-loc">
 				{#if moment.location}
 					<span class="moment-card__location">
 						<Icon icon="material-symbols:location-on-outline-rounded" aria-hidden="true" />
@@ -112,8 +80,10 @@ const timeText = $derived(formatDateToYYYYMMDDHHmm(publishedAt));
 						{/each}
 					</div>
 				{/if}
-			</footer>
-		{/if}
+			</div>
+
+			<time class="moment-card__time" datetime={moment.published}>{timeText}</time>
+		</footer>
 	{/if}
 </article>
 
@@ -125,100 +95,101 @@ const timeText = $derived(formatDateToYYYYMMDDHHmm(publishedAt));
 	flex-direction: column
 	box-sizing: border-box
 	width: 100%
-	/* 网格项自动最小尺寸归零：卡片随轨道收缩，长内容由正文自行换行 */
 	min-width: 0
 	padding: var(--m3e-space-4) var(--m3e-space-5)
 	border-radius: var(--shape-corner-l)
 	background: var(--card-bg)
 	border: 1px solid var(--outline-variant)
 	color: var(--on-surface)
+	position: relative
 
-	&__header
+	&__pinned-pin
+		position: absolute
+		top: 0.875rem
+		right: 0.875rem
 		display: flex
 		align-items: center
-		gap: var(--m3e-space-3)
-
-	&__author
-		display: inline-flex
-		align-items: center
-		gap: var(--m3e-space-2)
-		min-width: 0
-		text-decoration: none
-		border-radius: var(--shape-corner-full)
-		&:focus-visible
-			outline: 2px solid var(--primary)
-			outline-offset: 2px
-
-	&__name
-		overflow: hidden
-		text-overflow: ellipsis
-		white-space: nowrap
-		color: var(--on-surface)
-		font: var(--m3e-type-title-small)
-		font-weight: 600
-
-	&__badges
-		display: inline-flex
-		align-items: center
-		gap: var(--m3e-space-1)
-		flex-shrink: 0
-
-	&__badge
-		display: inline-flex
-		align-items: center
-		gap: var(--m3e-space-1)
-		padding: 0.1875rem 0.5rem
-		border-radius: var(--shape-corner-full)
-		background: var(--surface-container-high)
-		color: var(--on-surface-variant)
-		font: var(--m3e-type-label-small)
+		justify-content: center
+		width: 1.5rem
+		height: 1.5rem
+		color: var(--primary)
+		opacity: 0.85
 		> :global(svg)
-			width: 1rem
-			height: 1rem
+			width: 1.125rem
+			height: 1.125rem
+			transform: rotate(30deg)
 
-		&--pinned
-			background: var(--primary-container)
-			color: var(--on-primary-container)
-
-		&--encrypted
-			background: var(--secondary-container)
-			color: var(--on-secondary-container)
-
-	&__time
-		margin-left: auto
-		flex-shrink: 0
-		color: var(--on-surface-variant)
-		font: var(--m3e-type-body-small)
+	&__media
+		margin-bottom: var(--m3e-space-3)
+		width: 100%
 
 	&__content
-		margin-top: var(--m3e-space-3)
 		color: var(--on-surface)
-		font: var(--m3e-type-body-medium)
-		line-height: 1.75
-		/* anywhere：换行同时参与 min-content 计算，窄宽度下长链接才不会溢出 */
+		font-size: 1rem
+		line-height: 1.7
 		overflow-wrap: anywhere
+		:global(p)
+			font-size: 1rem
+			line-height: 1.7
 		:global(p:first-child)
 			margin-top: 0
 		:global(p:last-child)
 			margin-bottom: 0
 
-	&__footer
+		:global(pre.astro-code)
+			margin: 0.75rem 0
+			padding: 0.875rem 1.125rem
+			border-radius: var(--shape-corner-m)
+			background-color: #1e1e2e !important
+			color: #cdd6f4 !important
+			border: 1px solid var(--outline-variant)
+			overflow-x: auto
+			font-size: 0.875rem
+			line-height: 1.6
+
+		:global(pre.astro-code code)
+			background: transparent !important
+			padding: 0 !important
+			border-radius: 0 !important
+			color: inherit !important
+			font-family: var(--font-code, monospace)
+
+		:global(pre.astro-code code span.line)
+			display: block
+			background: transparent !important
+
+		:global(:not(pre) > code)
+			padding: 0.15rem 0.4rem
+			border-radius: var(--shape-corner-xs)
+			background: var(--surface-container-high)
+			color: var(--primary)
+			font-size: 0.875em
+			font-family: var(--font-code, monospace)
+
+	&__meta
 		display: flex
 		align-items: center
 		justify-content: space-between
 		gap: var(--m3e-space-3)
+		margin-top: var(--m3e-space-4)
+		padding-top: var(--m3e-space-2)
+		border-top: 1px solid var(--outline-variant)
+
+	&__tags-and-loc
+		display: flex
+		align-items: center
+		gap: var(--m3e-space-3)
 		flex-wrap: wrap
-		margin-top: var(--m3e-space-3)
 
 	&__location
 		display: inline-flex
 		align-items: center
 		gap: 0.25rem
 		color: var(--on-surface-variant)
-		font: var(--m3e-type-label-small)
+		font-size: 0.875rem
 		> :global(svg)
-			width: 1rem
-			height: 1rem
+			width: 0.875rem
+			height: 0.875rem
 
 	&__tags
 		display: flex
@@ -226,8 +197,29 @@ const timeText = $derived(formatDateToYYYYMMDDHHmm(publishedAt));
 		gap: 0.375rem
 
 	&__tag
+		display: inline-flex
+		align-items: center
+		padding: 0.15rem 0.55rem
+		border-radius: var(--shape-corner-full)
+		background: var(--surface-container-high)
+		color: var(--primary)
+		font-size: 0.875rem
+		font-weight: 500
+		letter-spacing: 0.01em
+
+	&__time
+		margin-left: auto
+		flex-shrink: 0
+		display: inline-flex
+		align-items: center
+		gap: 0.25rem
+		padding: 0.15rem 0.55rem
+		border-radius: var(--shape-corner-full)
+		background: var(--surface-container)
 		color: var(--on-surface-variant)
-		font: var(--m3e-type-label-small)
+		font-size: 0.875rem
+		font-variant-numeric: tabular-nums
+		letter-spacing: 0.01em
 
 	@media (max-width: bp-sm - 1px)
 		padding: 0.875rem 1rem

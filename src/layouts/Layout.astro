@@ -34,6 +34,7 @@ import {
 } from "../utils/font-options";
 import { resolvePageWidth } from "../utils/responsive-utils";
 import "../styles/main.css";
+import "../styles/variables.styl";
 import "../styles/font-faces.css";
 import textureStyles from "../styles/textures.css?raw";
 
@@ -247,9 +248,7 @@ const defaultSchemeStyle = createDefaultSchemeStyle();
 	</body>
 </html>
 
-<style lang="stylus" is:global>
-@import "../styles/variables.styl"
-</style>
+
 
 <style is:global define:vars={{
 	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,

@@ -3,6 +3,22 @@
 @import "./markdown/disclosures.css";
 
 .custom-md {
+  /* Tailwind Typography 默认的 dark:prose-invert body 颜色偏暗（#d1d5db / oklch 70% 左右）。
+     在 M3 暗色主题下，将其提升至 on-surface 高对比度，使长文本阅读清晰舒适 */
+  --tw-prose-body: var(--on-surface);
+  --tw-prose-headings: var(--on-surface);
+  --tw-prose-invert-body: color-mix(in oklab, var(--on-surface) 95%, transparent);
+  --tw-prose-invert-headings: var(--on-surface);
+  --tw-prose-invert-lead: var(--on-surface-variant);
+  --tw-prose-invert-bold: var(--on-surface);
+  --tw-prose-invert-counters: var(--on-surface-variant);
+  --tw-prose-invert-bullets: var(--primary);
+  --tw-prose-invert-hr: var(--outline-variant);
+  --tw-prose-invert-quotes: var(--on-surface);
+  --tw-prose-invert-quote-borders: var(--primary);
+  --tw-prose-invert-th-borders: var(--outline-variant);
+  --tw-prose-invert-td-borders: var(--outline-variant);
+
   h1 {
     @apply text-3xl;
   }
@@ -29,7 +45,7 @@
   }
 
   a:not(.no-styling) {
-    @apply relative bg-none transition rounded-md font-medium text-[var(--primary)]
+    @apply relative bg-none transition rounded-[var(--shape-corner-xs)] font-medium text-[var(--primary)]
         underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
     padding: var(--m3e-space-1);
     margin: calc(var(--m3e-space-1) * -1);
@@ -50,7 +66,7 @@
   }
 
   code {
-    @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+    @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-[var(--shape-corner-xs)] overflow-hidden;
 
     font-family:
       var(--m3e-font-mono-family),

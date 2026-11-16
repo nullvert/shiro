@@ -86,7 +86,7 @@ function handleChange() {
         justify-content: center
         width: 1.125rem
         height: 1.125rem
-        border-radius: 2px
+        border-radius: 2px /* M3 Checkbox: md.comp.checkbox.container.shape = 2dp */
         border: 2px solid var(--on-surface-variant)
         box-sizing: border-box
         background: transparent

@@ -4,10 +4,9 @@
  * 行 = MetaIcon tonal 徽标 + 标签 + 点线引导 + 表格数字，
  * 与 PostMeta 的元信息语言同源；数据来自 utils/site-stats（备忘化汇总）。
  */
-import MetaIcon from "@components/atoms/display/MetaIcon.astro";
+import Icon from "@components/atoms/display/Icon.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { getSiteStats } from "@utils/site-stats";
 import { seriesConfig } from "@/config";
 import type { StatsWidget } from "@/types/sidebarConfig";
@@ -25,133 +24,179 @@ const style = Astro.props.style;
 const stats = await getSiteStats();
 // 千位分隔固定 en-US：构建产物数值稳定，不随构建机 locale 漂移
 const fmt = (n: number) => n.toLocaleString("en-US");
-
-// 最近更新：SSR 渲染绝对日期（构建产物稳定、无 JS 也可读），
-// 页面加载后由底部脚本升级为相对时间（今天/昨天/N 天前）
-const lastActivityText = stats.lastActivity
-	? formatDateToYYYYMMDD(new Date(stats.lastActivity))
-	: "—";
-const todayText = i18n(I18nKey.statsToday);
-const yesterdayText = i18n(I18nKey.statsYesterday);
-const daysAgoText = i18n(I18nKey.statsDaysAgo);
-
-const rows = [
-	{
-		icon: "material-symbols:article-outline-rounded",
-		label: i18n(I18nKey.statsPosts),
-		value: fmt(stats.posts),
-	},
-	{
-		icon: "material-symbols:forum-outline-rounded",
-		label: i18n(I18nKey.moments),
-		value: fmt(stats.moments),
-	},
-	{
-		icon: "material-symbols:folder-outline-rounded",
-		label: i18n(I18nKey.categories),
-		value: fmt(stats.categories),
-	},
-	{
-		icon: "material-symbols:tag-rounded",
-		label: i18n(I18nKey.tags),
-		value: fmt(stats.tags),
-	},
-	// 系列功能关闭时不产出统计行（零额外负担）
-	...(seriesConfig.enable
-		? [
-				{
-					icon: "material-symbols:auto-stories-outline-rounded",
-					label: i18n(I18nKey.series),
-					value: fmt(stats.series),
-				},
-			]
-		: []),
-	{
-		icon: "material-symbols:edit-note-outline-rounded",
-		label: i18n(I18nKey.statsWords),
-		value: fmt(stats.words),
-	},
-	{
-		icon: "material-symbols:calendar-month-outline-rounded",
-		label: i18n(I18nKey.statsDays),
-		value: fmt(stats.days),
-	},
-	{
-		icon: "material-symbols:update-rounded",
-		label: i18n(I18nKey.statsUpdated),
-		value: lastActivityText,
-		relative: true,
-	},
-];
 ---
 
-<WidgetLayout name={i18n(I18nKey.stats)} id="site-stats" class={className} style={style}>
-	<ul class="m3-site-stats">
-		{rows.map((row) => (
-			<li class="m3-site-stats__row">
-				<MetaIcon icon={row.icon} />
-				<span class="m3-site-stats__label">{row.label}</span>
-				<span class="m3-site-stats__rule" aria-hidden="true"></span>
-				<span
-					class="m3-site-stats__value"
-					data-last-update={row.relative ? "" : undefined}
-					>{row.value}</span
-				>
-			</li>
-		))}
-	</ul>
+<WidgetLayout
+	name={i18n(I18nKey.stats)}
+	icon="material-symbols:equalizer-rounded"
+	id="site-stats"
+	class={className}
+	style={style}
+>
+	<div class="m3-stats-bento">
+		{/* 1. ПОСТЫ (главный геройский блок на всю ширину) */}
+		<div class="m3-stats-bento__hero">
+			<div class="m3-stats-bento__watermark" aria-hidden="true">
+				<Icon icon="material-symbols:article-outline-rounded" />
+			</div>
+			<span class="m3-stats-bento__hero-lbl">{i18n(I18nKey.statsPosts)}</span>
+			<span class="m3-stats-bento__hero-val">{fmt(stats.posts)}</span>
+		</div>
+
+		{/* 2. ТАКСОНОМИЯ (сетка 2x2: заголовок вверху, крупная цифра, фоновая иконка) */}
+		<div class:list={["m3-stats-bento__grid", seriesConfig.enable ? "m3-stats-bento__grid--4" : "m3-stats-bento__grid--3"]}>
+			<div class="m3-stats-bento__tile">
+				<div class="m3-stats-bento__watermark" aria-hidden="true">
+					<Icon icon="material-symbols:forum-outline-rounded" />
+				</div>
+				<span class="m3-stats-bento__tile-lbl">{i18n(I18nKey.moments)}</span>
+				<span class="m3-stats-bento__tile-val">{fmt(stats.moments)}</span>
+			</div>
+
+			<div class="m3-stats-bento__tile">
+				<div class="m3-stats-bento__watermark" aria-hidden="true">
+					<Icon icon="material-symbols:folder-outline-rounded" />
+				</div>
+				<span class="m3-stats-bento__tile-lbl">{i18n(I18nKey.categories)}</span>
+				<span class="m3-stats-bento__tile-val">{fmt(stats.categories)}</span>
+			</div>
+
+			<div class="m3-stats-bento__tile">
+				<div class="m3-stats-bento__watermark" aria-hidden="true">
+					<Icon icon="material-symbols:tag-rounded" />
+				</div>
+				<span class="m3-stats-bento__tile-lbl">{i18n(I18nKey.tags)}</span>
+				<span class="m3-stats-bento__tile-val">{fmt(stats.tags)}</span>
+			</div>
+
+			{seriesConfig.enable && (
+				<div class="m3-stats-bento__tile">
+					<div class="m3-stats-bento__watermark" aria-hidden="true">
+						<Icon icon="material-symbols:view-carousel-outline-rounded" />
+					</div>
+					<span class="m3-stats-bento__tile-lbl">{i18n(I18nKey.series)}</span>
+					<span class="m3-stats-bento__tile-val">{fmt(stats.series)}</span>
+				</div>
+			)}
+		</div>
+	</div>
 </WidgetLayout>
 
 <style lang="stylus">
-.m3-site-stats
+.m3-stats-bento
 	display: flex
 	flex-direction: column
-	gap: var(--m3e-space-2)
-	margin: 0
-	padding: 0
-	list-style: none
+	gap: 0.625rem
 
-	&__row
+	/* ФОНОВАЯ ИКОНКА ДЛЯ ВСЕХ КАРТОЧЕК */
+	&__watermark
+		position: absolute
+		right: 0.375rem
+		bottom: 0.125rem
+		font-size: 2.75rem
+		color: var(--primary)
+		opacity: 0.12
+		pointer-events: none
+		user-select: none
+		line-height: 1
 		display: flex
 		align-items: center
-		gap: var(--m3e-space-2)
+		justify-content: center
 
-	&__label
-		font: var(--m3e-type-body-medium)
-		font-weight: 500
+	/* ГЕРОЙСКАЯ КАРТОЧКА: ПОСТЫ */
+	&__hero
+		position: relative
+		overflow: hidden
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+		justify-content: space-between
+		padding: 1rem 1.125rem
+		min-height: 5.25rem
+		border-radius: 0.875rem
+		background: var(--surface-container-low)
+		border: 1px solid unquote("color-mix(in oklab, var(--outline-variant) 45%, transparent)")
+		box-shadow: 0 1px 2px unquote("color-mix(in oklab, var(--outline) 6%, transparent)")
+		transition: background var(--m3e-duration-short) var(--m3e-easing-standard), border-color var(--m3e-duration-short) var(--m3e-easing-standard)
+
+		:global(.dark) &
+			background: unquote("color-mix(in oklab, var(--card-bg) 75%, var(--surface-container-highest) 25%)")
+			border-color: unquote("color-mix(in oklab, var(--outline-variant) 25%, transparent)")
+			box-shadow: none
+
+		.m3-stats-bento__watermark
+			font-size: 3.75rem
+			right: 0.875rem
+			bottom: 0.25rem
+			opacity: 0.16
+
+	&__hero-lbl
+		font-size: 0.6875rem
+		font-weight: 700
+		text-transform: uppercase
+		letter-spacing: 0.08em
 		color: var(--on-surface-variant)
-		white-space: nowrap
+		position: relative
+		z-index: 1
 
-	/* 点线引导：沉到文字基线附近，长度伸缩填满中段 */
-	&__rule
-		flex: 1
-		align-self: flex-end
-		margin-bottom: 0.35em
-		min-width: 0.75rem
-		border-bottom: 2px dotted var(--outline-variant)
-
-	&__value
-		font: var(--m3e-type-title-small)
-		font-weight: 600
-		font-variant-numeric: tabular-nums
+	&__hero-val
+		font-size: 2.125rem
+		font-weight: 800
+		line-height: 1
+		margin-top: 0.375rem
 		color: var(--on-surface)
-		white-space: nowrap
-</style>
+		font-variant-numeric: tabular-nums
+		letter-spacing: -0.03em
+		position: relative
+		z-index: 1
 
-<script is:inline define:vars={{ lastActivityISO: stats.lastActivity, todayText, yesterdayText, daysAgoText }}>
-	// 最近更新相对化：按本地时区取日界，差值恒为整天数；
-	// 无文章或脚本禁用时保留 SSR 的绝对日期
-	(() => {
-		const el = document.querySelector("[data-last-update]");
-		if (!el || !lastActivityISO) return;
-		const DAY_MS = 86_400_000;
-		const dayStart = (d) =>
-			new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-		const diffDays = Math.round(
-			(dayStart(new Date()) - dayStart(new Date(lastActivityISO))) / DAY_MS,
-		);
-		if (diffDays <= 0) el.textContent = todayText;
-		else if (diffDays === 1) el.textContent = yesterdayText;
-		else el.textContent = daysAgoText.replace("{days}", String(diffDays));
-	})();
-</script>
+	/* СЕТКА 2x2 ДЛЯ ОСТАЛЬНЫХ МЕТРИК */
+	&__grid
+		display: grid
+		gap: 0.625rem
+
+		&--3
+			grid-template-columns: repeat(3, 1fr)
+
+		&--4
+			grid-template-columns: repeat(2, 1fr)
+
+	&__tile
+		position: relative
+		overflow: hidden
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+		justify-content: space-between
+		padding: 0.875rem 1rem
+		min-height: 4.75rem
+		border-radius: 0.875rem
+		background: var(--surface-container-low)
+		border: 1px solid unquote("color-mix(in oklab, var(--outline-variant) 45%, transparent)")
+		box-shadow: 0 1px 2px unquote("color-mix(in oklab, var(--outline) 6%, transparent)")
+		transition: background var(--m3e-duration-short) var(--m3e-easing-standard), border-color var(--m3e-duration-short) var(--m3e-easing-standard)
+
+		:global(.dark) &
+			background: unquote("color-mix(in oklab, var(--card-bg) 75%, var(--surface-container-highest) 25%)")
+			border-color: unquote("color-mix(in oklab, var(--outline-variant) 25%, transparent)")
+			box-shadow: none
+
+	&__tile-lbl
+		font-size: 0.6875rem
+		font-weight: 600
+		letter-spacing: 0.02em
+		color: var(--on-surface-variant)
+		position: relative
+		z-index: 1
+
+	&__tile-val
+		font-size: 1.625rem
+		font-weight: 800
+		line-height: 1
+		margin-top: 0.375rem
+		color: var(--on-surface)
+		font-variant-numeric: tabular-nums
+		letter-spacing: -0.02em
+		position: relative
+		z-index: 1
+</style>

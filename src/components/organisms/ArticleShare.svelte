@@ -203,46 +203,17 @@ function downloadPoster() {
 }
 </script>
 
-<section
-	class={`article-share relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 rounded-xl ${className}`}
+<div
+	class={`article-share-actions flex items-center ${className}`}
 	data-article-share
-	aria-labelledby="article-share-title"
 >
-	<div class="article-share__content relative z-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-		<div class="flex items-center gap-3.5 min-w-0 flex-1">
-			<div
-				class="article-share__icon-box flex items-center justify-center h-12 w-12 rounded-xl bg-[var(--primary-container)] text-[var(--on-primary-container)] shrink-0 transition"
-				aria-hidden="true"
-			>
-				<Icon
-					icon="material-symbols:share-outline-rounded"
-					class="text-2xl"
-				/>
-			</div>
-			<div class="flex flex-col min-w-0">
-				<h2 id="article-share-title" class="font-bold text-[var(--on-surface)] text-base m-0 leading-snug truncate">
-					{i18n(I18nKey.shareArticle)}
-				</h2>
-				<p class="text-[var(--on-surface-variant)] text-sm m-0 mt-0.5 leading-snug line-clamp-2">
-					{i18n(I18nKey.shareArticleDescription)}
-				</p>
-			</div>
-		</div>
-
-		<div class="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
-			<Button
-				variant="filled"
-				size="small"
-				icon="material-symbols:share-outline-rounded"
-				label={i18n(I18nKey.shareArticle)}
-				onclick={openShareDialog}
-			/>
-		</div>
-	</div>
-
-	<span class="article-share__watermark" aria-hidden="true">
-		<Icon icon="material-symbols:share-rounded" />
-	</span>
+	<Button
+		variant="filled"
+		size="small"
+		label={i18n(I18nKey.shareArticle)}
+		onclick={openShareDialog}
+		class="article-share-btn"
+	/>
 
 	<!-- Share Dialog -->
 	{#if shareDialogOpen}
@@ -306,31 +277,28 @@ function downloadPoster() {
 			{/snippet}
 		</Dialog>
 	{/if}
-</section>
+</div>
 
 <style lang="stylus">
 @import "../../styles/breakpoints.styl"
 
-.article-share
-	&__watermark
-		position: absolute
-		right: 1.5rem
-		top: 50%
-		transform: translateY(-50%)
-		pointer-events: none
-		color: var(--outline-variant)
-		opacity: 0.18
-		line-height: 1
-		user-select: none
+.article-share-actions
+	width: 100%
 
-		> :global(svg)
-			width: 7.5rem
-			height: 7.5rem
+	@media (min-width: bp-md)
+		width: auto
+
+	:global(.article-share-btn)
+		white-space: nowrap
+		width: 100%
+
+		@media (min-width: bp-md)
+			width: auto
 
 :global(.article-share-dialog)
 	width: 100%
 	/* !important boundary: Dialog owns the scoped default width; its public class API lets ArticleShare own this variant width. */
-	max-width: unquote("min(36rem, calc(100vw - 2rem))") !important
+	max-width: unquote("min(48rem, calc(100vw - 2rem))") !important
 	max-height: calc(100dvh - 2rem)
 	display: flex
 	flex-direction: column
@@ -352,19 +320,19 @@ function downloadPoster() {
 	justify-content: center
 	width: 100%
 	box-sizing: border-box
-	padding: var(--m3e-space-2)
-	background: var(--surface-container-low)
+	padding: 0
+	background: transparent
 	border-radius: var(--shape-corner-m)
-	border: 1px solid var(--outline-variant)
+	border: none
 
 	&__img
 		display: block
 		max-height: calc(100dvh - 16rem)
-		max-width: 100%
-		width: auto
+		width: 100%
 		height: auto
-		border-radius: var(--shape-corner-s)
+		border-radius: var(--shape-corner-m)
 		object-fit: contain
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15)
 
 .share-poster-status
 	display: flex

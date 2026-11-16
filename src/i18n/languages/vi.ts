@@ -289,6 +289,7 @@ export const vi: Translation = {
 	[Key.paginationLabel]: "Phân trang",
 	[Key.tagsViewAll]: "Xem tất cả thẻ",
 
+	[Key.authorMenu]: "Menu tác giả",
 	[Key.author]: "Tác giả",
 	[Key.publishedAt]: "Đăng vào lúc",
 	[Key.lastUpdatedNotice]: "Cập nhật lần cuối vào {date}, cách đây {days} ngày",

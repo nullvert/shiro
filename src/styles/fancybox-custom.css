@@ -9,7 +9,7 @@
 	/* 按钮：圆角矩形 + 毛玻璃 */
 	--f-button-width: 48px;
 	--f-button-height: 48px;
-	--f-button-border-radius: 0.75rem;
+	--f-button-border-radius: var(--shape-corner-m);
 	--f-button-color: #fff;
 	--f-button-hover-color: #fff;
 	--f-button-active-color: #fff;
@@ -48,7 +48,7 @@
 	padding: 1rem;
 	margin: 0 1rem 1rem;
 	text-align: center;
-	border-radius: 0.75rem;
+	border-radius: var(--shape-corner-m);
 	backdrop-filter: blur(6px);
 }
 
@@ -56,12 +56,12 @@
 .fancybox__container .fancybox__thumbs {
 	background: rgba(0, 0, 0, 0.6);
 	padding: 4px;
-	border-radius: 0.75rem;
+	border-radius: var(--shape-corner-m);
 	backdrop-filter: blur(6px);
 }
 
 .fancybox__container .f-thumbs__slide button {
-	border-radius: 0.5rem;
+	border-radius: var(--shape-corner-s);
 	overflow: hidden;
 	outline: 2px solid transparent;
 	outline-offset: -2px;
@@ -82,7 +82,7 @@
 	.fancybox__container {
 		--f-button-width: 40px;
 		--f-button-height: 40px;
-		--f-button-border-radius: 0.5rem;
+		--f-button-border-radius: var(--shape-corner-s);
 	}
 
 	.fancybox__container .f-carousel__toolbar {

@@ -64,7 +64,7 @@ if (context.next) {
 >
 	<header class="series-card__head">
 		<div class="series-card__lane">
-			<Icon icon="material-symbols:auto-stories-outline-rounded" />
+			<Icon icon="material-symbols:view-carousel-outline-rounded" />
 			<h2 class="series-card__title" id={headingId}>
 				<a class="series-card__link m3-state-layer" href={getSeriesUrl(context.slug)}>
 					{context.title}
@@ -202,10 +202,9 @@ if (context.next) {
 			background: var(--primary-container)
 			color: var(--on-primary-container)
 
-		/* 已完结是「沉淀」状态：用中性容器，避免抢走正文/续读的注意力 */
 		&--completed
-			background: var(--surface-container-highest)
-			color: var(--on-surface-variant)
+			background: var(--secondary-container)
+			color: var(--on-secondary-container)
 
 	&__meta
 		margin: 0

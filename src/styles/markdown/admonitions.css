@@ -8,7 +8,7 @@
 		color-mix(in oklab, var(--m3-admonition-accent) 28%, var(--outline-variant));
 	border-inline-start-width: var(--m3e-space-1);
 	border-inline-start-color: var(--m3-admonition-accent);
-	border-radius: var(--shape-corner-l);
+	border-radius: 0;
 	background: color-mix(
 		in oklab,
 		var(--m3-admonition-accent) 10%,
@@ -55,7 +55,7 @@
 
 .custom-md summary.m3-admonition__header {
 	grid-template-columns: var(--m3e-space-2) minmax(0, 1fr) var(--m3e-space-4);
-	border-radius: calc(var(--shape-corner-l) - 1px);
+	border-radius: 0;
 	cursor: pointer;
 	list-style: none;
 	user-select: none;

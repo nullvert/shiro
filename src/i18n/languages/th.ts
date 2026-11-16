@@ -277,6 +277,7 @@ export const th: Translation = {
 	[Key.paginationLabel]: "การเปลี่ยนหน้า",
 	[Key.tagsViewAll]: "ดูแท็กทั้งหมด",
 
+	[Key.authorMenu]: "เมนูผู้เขียน",
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",
 	[Key.lastUpdatedNotice]: "อัปเดตล่าสุดเมื่อ {date} ผ่านมาแล้ว {days} วัน",

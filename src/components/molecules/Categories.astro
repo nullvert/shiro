@@ -34,7 +34,13 @@ const categoryItems = categories.slice(0, DISPLAY_LIMIT).map((c) => ({
 }));
 ---
 
-<WidgetLayout name={i18n(I18nKey.categories)} id="categories" class={className} style={style}>
+<WidgetLayout
+	name={i18n(I18nKey.categories)}
+	icon="material-symbols:folder-open-outline-rounded"
+	id="categories"
+	class={className}
+	style={style}
+>
 	<CategoryList categories={categoryItems} />
 	{hasOverflow && (
 		<div slot="footer" class="widget-index-link">

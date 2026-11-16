@@ -13,7 +13,7 @@ const { badge, url, label } = Astro.props;
         <slot></slot>
     </span>
     { badge !== undefined && badge !== null && badge !== '' &&
-        <span class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+        <span class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-(--shape-corner-s) text-sm font-bold
             text-[var(--btn-content)] dark:text-[var(--deep-text)]
             bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
             flex items-center justify-center">

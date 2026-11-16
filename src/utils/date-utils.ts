@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/siteConfig";
 import {
 	formatCalendarDate,
 	formatInstantDateTimeInSiteTimeZone,
@@ -5,6 +6,23 @@ import {
 
 export function formatDateToYYYYMMDD(date: Date): string {
 	return formatCalendarDate(date);
+}
+
+/** 格式化日期为人类可读文本，基于站点语言或指定语言（如 "26 августа 2026 г." 或 "August 26, 2026"） */
+export function formatLocalizedDate(
+	date: Date,
+	lang: string = siteConfig.lang || "en",
+): string {
+	try {
+		return new Intl.DateTimeFormat(lang, {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+			timeZone: siteConfig.timeZone,
+		}).format(date);
+	} catch {
+		return formatCalendarDate(date);
+	}
 }
 
 const DAY_MS = 86_400_000;
@@ -48,3 +66,26 @@ export function resolveLastUpdatedNoticeState(
 export function formatDateToYYYYMMDDHHmm(date: Date): string {
 	return formatInstantDateTimeInSiteTimeZone(date);
 }
+
+/** Человекочитаемое форматирование даты и времени с учетом локали сайта: например "12 авг. 2026, 18:30" */
+export function formatLocalizedDateTime(
+	date: Date,
+	lang: string = siteConfig.lang || "en",
+): string {
+	try {
+		return new Intl.DateTimeFormat(lang, {
+			day: "numeric",
+			month: "short",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			timeZone: siteConfig.timeZone,
+		}).format(date);
+	} catch {
+		return formatInstantDateTimeInSiteTimeZone(date);
+	}
+}
+
+/** Сохраняем обратную совместимость для русского формата */
+export const formatRussianDateTime = (date: Date): string =>
+	formatLocalizedDateTime(date, "ru-RU");

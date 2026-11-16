@@ -1,18 +1,20 @@
 import { expect, test } from "@playwright/test";
-import packageMetadata from "../../package.json" with { type: "json" };
 
-test("footer exposes the source theme version from package metadata", async ({
+test("footer renders copyright notice and collapsible links", async ({
 	page,
 }) => {
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 
-	const versionLink = page
-		.locator('.m3-blog-footer a[href="https://github.com/LyraVoid/Shirone"]')
-		.filter({ hasText: packageMetadata.version })
-		.first();
+	const footer = page.locator(".m3-blog-footer").first();
+	await expect(footer).toBeVisible();
 
-	await expect(versionLink).toHaveText(packageMetadata.version);
-	const versionGroup = versionLink.locator("xpath=..");
-	await expect(versionGroup.locator(":scope > span")).toHaveText("Version");
-	await expect(versionGroup).toHaveCSS("gap", "6px");
+	const text = footer.locator(".m3-blog-footer__text");
+	await expect(text).toHaveText(/All Rights Reserved$/);
+
+	const details = footer.locator("details.m3-blog-footer__details");
+	await expect(details).toBeVisible();
+
+	const sitemapLink = footer.locator('a[href$="sitemap-index.xml"]');
+	await details.locator("summary").click();
+	await expect(sitemapLink).toBeVisible();
 });

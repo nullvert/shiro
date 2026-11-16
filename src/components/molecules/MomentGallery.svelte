@@ -122,14 +122,14 @@ function markViewerImageLoaded(src: string) {
 
 function tileSizes(i: number) {
 	if (gridVariant === "single")
-		return "(max-width: 639px) calc(100vw - 6.25rem), 480px";
+		return "(max-width: 639px) 100vw, 800px";
 	if (gridVariant === "pair")
-		return "(max-width: 639px) calc((100vw - 6.75rem) / 2), 240px";
+		return "(max-width: 639px) 50vw, 400px";
 	if (gridVariant === "mosaic" && i === 0)
-		return "(max-width: 639px) calc((100vw - 6.75rem) * 0.66), 320px";
+		return "(max-width: 639px) 66vw, 600px";
 	if (gridVariant === "mosaic")
-		return "(max-width: 639px) calc((100vw - 6.75rem) * 0.33), 160px";
-	return "(max-width: 639px) calc((100vw - 7.25rem) / 3), 200px";
+		return "(max-width: 639px) 33vw, 300px";
+	return "(max-width: 639px) 33vw, 350px";
 }
 
 // 打开时聚焦查看器容器（键盘立即可用）
@@ -289,24 +289,25 @@ $effect(() => {
 <style lang="stylus">
 @import "../../styles/breakpoints.styl"
 
-/* ===== 网格态（类名保持 moment-card__*，与卡片视觉一体） ===== */
+/* ===== 网格态（类名保持 moment-card__*，Telegram-style 宽幅画廊布局） ===== */
 .moment-card__gallery
 	display: grid
-	gap: 0.5rem
-	margin-top: 0.875rem
+	gap: 0.375rem
+	margin-top: 0.25rem
+	margin-bottom: 0.5rem
+	width: 100%
+	max-width: 44rem
 
-	/* 桌面端限宽：多图网格的格子保持精致尺度，窄屏自然全宽 */
+	/* 双图：等宽两列，铺开更饱满 */
 	&--pair
 		grid-template-columns: repeat(2, 1fr)
-		max-width: 30rem
-	/* 3 图拼图：左大图跨两行 + 右侧两方格，整体拼成一个正方形 */
+	/* 3 图拼图：左大图跨两行 + 右侧两方格，充满网格 */
 	&--mosaic
 		grid-template-columns: 2fr 1fr
 		grid-template-rows: 1fr 1fr
-		max-width: 30rem
+	/* 3+ 图：三列网格 */
 	&--trio
 		grid-template-columns: repeat(3, 1fr)
-		max-width: 38rem
 
 .moment-card__tile
 	position: relative
@@ -326,26 +327,27 @@ $effect(() => {
 		width: 100%
 		height: 100%
 		object-fit: cover
-		/* 加载前隐藏（指示器占位），加载完成后淡入 */
 		opacity: 0
 		transition: opacity var(--m3e-duration-medium) var(--m3e-easing-standard)
 
 		&.moment-card__tile-img--loaded
 			opacity: 1
 
-	/* 单图：固定 4:3 比例盒（限宽 30rem）。
-	   不用自然尺寸：lazy 图片加载前无内在尺寸，fit-content 会塌成 0×0，
-	   Chrome 对零尺寸元素的懒加载可能永不触发 */
+	/* 单图：Telegram 风格大图预览，自然保持宽高比，限宽限高防溢出 */
 	&--single
-		aspect-ratio: 4 / 3
-		width: 100%
-		max-width: 30rem
+		aspect-ratio: auto
+		width: fit-content
+		max-width: 100%
+		max-height: 32rem
 		border-radius: var(--shape-corner-l)
 		> img
-			height: 100%
-			object-fit: cover
+			width: auto
+			height: auto
+			max-width: 100%
+			max-height: 32rem
+			object-fit: contain
 
-	/* 拼图大图：跨两行由行高撑满（与右列两方格等比成正方形） */
+	/* 拼图大图：跨两行由行高撑满 */
 	&--hero
 		grid-row: span 2
 		aspect-ratio: auto

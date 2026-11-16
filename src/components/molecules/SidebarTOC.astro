@@ -35,7 +35,8 @@ const tocHeadings = headings.map((heading) => ({
 <WidgetLayout
 	id="toc-inner-wrapper"
 	name={i18n(I18nKey.tableOfContents)}
-	class:list={["sidebar-toc", className]}
+	icon="material-symbols:format-list-bulleted-rounded"
+	class:list={["sidebar-toc hidden lg:block", className]}
 	{style}
 >
 	<div id="toc" class="sidebar-toc__content">

@@ -278,6 +278,7 @@ export const zh_CN: Translation = {
 	[Key.paginationLabel]: "分页导航",
 	[Key.tagsViewAll]: "查看全部标签",
 
+	[Key.authorMenu]: "作者菜单",
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.lastUpdatedNotice]: "最后更新于 {date}，距今已过 {days} 天",

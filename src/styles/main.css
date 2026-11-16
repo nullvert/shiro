@@ -16,6 +16,14 @@
     /* Tailwind's baseline must stay literal; Astro Fonts may override
        --font-mono with the registered hashed family in custom mode. */
     --font-mono: var(--m3e-font-mono-fallback);
+
+    /* M3E shape corner tokens mapping for Tailwind rounded-* utilities */
+    --radius-xs: var(--shape-corner-xs);
+    --radius-sm: var(--shape-corner-s);
+    --radius-md: var(--shape-corner-m);
+    --radius-lg: var(--shape-corner-l);
+    --radius-xl: var(--shape-corner-xl);
+    --radius-full: var(--shape-corner-full);
 }
 
 @import "./transition.css" layer(components);
@@ -53,6 +61,7 @@
        否则默认黑色在暗色模式下不可见 */
     body {
         color: var(--on-surface);
+        letter-spacing: 0.02em;
     }
 }
 
@@ -65,7 +74,7 @@
         before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10
     }
     .link {
-        @apply transition rounded-md p-1 -m-1;
+        @apply transition rounded-[var(--shape-corner-xs)] p-1 -m-1;
     }
     .float-panel {
         @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none

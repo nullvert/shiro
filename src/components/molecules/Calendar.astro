@@ -30,7 +30,13 @@ const locale = siteConfig.lang.replace("_", "-");
 const { postsByDate, activeMonths } = await getCalendarData();
 ---
 
-<WidgetLayout name={i18n(I18nKey.calendar)} id="calendar" class={className} style={style}>
+<WidgetLayout
+	name={i18n(I18nKey.calendar)}
+	icon="material-symbols:calendar-today-outline-rounded"
+	id="calendar"
+	class={className}
+	style={style}
+>
 	<CalendarView
 		client:visible
 		{locale}

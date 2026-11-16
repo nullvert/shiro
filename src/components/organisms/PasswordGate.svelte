@@ -139,26 +139,12 @@ async function unlock() {
 	aria-labelledby={headingId}
 	aria-busy={loading}
 >
-	{#if variant === "default"}
-		<div class="password-gate__visual" aria-hidden="true">
-			<div class="password-gate__mosaic">
-				<span class={`password-gate__tile password-gate__tile--one`}></span>
-				<span class={`password-gate__tile password-gate__tile--two`}></span>
-				<span class={`password-gate__tile password-gate__tile--three`}></span>
-				<span class={`password-gate__tile password-gate__tile--four`}></span>
-			</div>
-			<div class="password-gate__seal">
-				<Icon icon="material-symbols:shield-lock-rounded" aria-hidden="true" />
-			</div>
-		</div>
-	{/if}
-
 	<div class="password-gate__content">
 		<div class="password-gate__heading">
 			<div class="password-gate__heading-icon" aria-hidden="true">
 				<Icon icon={resolvedHeadingIcon} />
 			</div>
-			<div>
+			<div class="password-gate__heading-text">
 				<h2 id={headingId}>{resolvedTitle}</h2>
 				<p>{resolvedDescription}</p>
 			</div>
@@ -229,111 +215,81 @@ async function unlock() {
 @import "../../styles/breakpoints.styl"
 
 .password-gate
-	display: grid
-	grid-template-columns: minmax(16rem, 0.9fr) minmax(0, 1.1fr)
+	display: flex
+	flex-direction: column
+	align-items: center
 	width: 100%
-	max-width: 62rem
-	min-height: 22rem
+	max-width: 32rem
 	margin: 0 auto
-	overflow: hidden
 	border: 1px solid var(--outline-variant)
-	border-radius: var(--shape-corner-l)
-	background: var(--surface-container-lowest)
+	border-radius: var(--shape-corner-xl)
+	background: var(--surface-container-low)
 	color: var(--on-surface)
-
-	&__visual
-		position: relative
-		display: grid
-		place-items: center
-		min-width: 0
-		overflow: hidden
-		background: var(--surface-container-high)
-
-	&__mosaic
-		position: absolute
-		inset: var(--m3e-space-6)
-		display: grid
-		grid-template-columns: 1.15fr 0.85fr
-		grid-template-rows: 0.85fr 1.15fr
-		gap: var(--m3e-space-3)
-		transform: rotate(-3deg) scale(1.08)
-
-	&__tile
-		min-width: 0
-		border-radius: var(--shape-corner-l)
-		box-shadow: inset 0 0 0 1px var(--outline-variant)
-
-	&__tile--one
-		background: var(--primary-container)
-
-	&__tile--two
-		background: var(--tertiary-container)
-
-	&__tile--three
-		background: var(--secondary-container)
-
-	&__tile--four
-		background: var(--surface-container-highest)
-
-	&__seal
-		position: relative
-		display: grid
-		place-items: center
-		width: 5rem
-		height: 5rem
-		border: var(--m3e-space-2) solid var(--surface-container-lowest)
-		border-radius: var(--shape-corner-full)
-		background: var(--primary)
-		box-shadow: var(--m3e-elevation-3)
-		color: var(--on-primary)
-		> :global(svg)
-			width: 2rem
-			height: 2rem
+	box-shadow: var(--m3e-elevation-1)
+	box-sizing: border-box
 
 	&__content
 		display: flex
 		flex-direction: column
-		justify-content: center
+		align-items: center
+		width: 100%
 		gap: var(--m3e-space-5)
 		min-width: 0
 		padding: var(--m3e-space-8)
+		box-sizing: border-box
 
 	&__heading
-		display: grid
-		grid-template-columns: auto minmax(0, 1fr)
-		align-items: start
+		display: flex
+		flex-direction: column
+		align-items: center
+		text-align: center
 		gap: var(--m3e-space-4)
+		width: 100%
 
 	&__heading-icon
 		display: grid
 		place-items: center
-		width: 3rem
-		height: 3rem
-		border-radius: var(--shape-corner-m)
+		width: 4rem
+		height: 4rem
+		border-radius: var(--shape-corner-full)
 		background: var(--secondary-container)
 		color: var(--on-secondary-container)
+		box-shadow: var(--m3e-elevation-1)
+		flex-shrink: 0
 		> :global(svg)
-			width: 1.5rem
-			height: 1.5rem
+			width: 2rem
+			height: 2rem
+
+	&__heading-text
+		display: flex
+		flex-direction: column
+		gap: var(--m3e-space-1)
+		align-items: center
+		width: 100%
 
 	h2
 		margin: 0
 		color: var(--on-surface)
 		font: var(--m3e-type-title-large)
+		font-weight: 600
 
 	&__heading p
-		margin: var(--m3e-space-1) 0 0
+		margin: 0
 		color: var(--on-surface-variant)
 		font: var(--m3e-type-body-medium)
+		max-width: 24rem
 
 	&__hint
 		display: flex
 		align-items: center
 		gap: var(--m3e-space-3)
-		min-width: 0
+		width: 100%
+		max-width: 100%
+		box-sizing: border-box
 		padding: var(--m3e-space-3) var(--m3e-space-4)
 		border-radius: var(--shape-corner-m)
 		background: var(--surface-container-high)
+		border: 1px solid var(--outline-variant)
 		color: var(--on-surface-variant)
 		font: var(--m3e-type-body-medium)
 		> :global(svg)
@@ -347,15 +303,17 @@ async function unlock() {
 
 	&__form
 		display: grid
-		grid-template-columns: minmax(0, 1fr) /* 明确网格列可收缩，防止隐式轨道被子项内容撑大 */
+		grid-template-columns: minmax(0, 1fr)
 		gap: var(--m3e-space-4)
 		width: 100%
 
 	&__field
-		min-width: 0 /* 覆盖网格项默认的最小尺寸限制，防止移动端窄屏溢出 */
+		min-width: 0
 		min-height: 4.5rem
+		width: 100%
 
 	:global(.password-gate__input)
+		width: 100%
 		border-radius: var(--shape-corner-m)
 
 	:global(.password-gate__input .m3-text-field__trailing)
@@ -368,40 +326,37 @@ async function unlock() {
 	to
 		transform: rotate(1turn)
 
-@media (max-width: bp-md - 1px)
-	.password-gate
-		grid-template-columns: 1fr
-		min-height: 0
-
-		&__visual
-			min-height: 12rem
-
-		&__mosaic
-			inset: var(--m3e-space-5)
-
-		&__content
-			padding: var(--m3e-space-6)
-
 @media (max-width: bp-sm - 1px)
 	.password-gate
-		&__visual
-			min-height: 9rem
-
-		&__mosaic
-			inset: var(--m3e-space-4)
-			gap: var(--m3e-space-2)
-
-		&__seal
-			width: 4rem
-			height: 4rem
-			border-width: var(--m3e-space-1)
+		border-radius: var(--shape-corner-l)
 
 		&__content
 			gap: var(--m3e-space-4)
-			padding: var(--m3e-space-5)
+			padding: var(--m3e-space-5) var(--m3e-space-4)
 
 		&__heading
 			gap: var(--m3e-space-3)
+
+		&__heading-icon
+			width: 3.25rem
+			height: 3.25rem
+			> :global(svg)
+				width: 1.75rem
+				height: 1.75rem
+
+		h2
+			font: var(--m3e-type-title-medium)
+			font-weight: 600
+
+		&__heading p
+			font: var(--m3e-type-body-small)
+
+		&__hint
+			padding: var(--m3e-space-2) var(--m3e-space-3)
+			font: var(--m3e-type-body-small)
+
+		&__field
+			min-height: 4.25rem
 
 .password-gate
 	&--compact
@@ -411,17 +366,31 @@ async function unlock() {
 		border: 0
 		border-radius: 0
 		background: transparent
+		box-shadow: none
 
 		.password-gate__content
+			align-items: stretch
 			gap: var(--m3e-space-3)
 			padding: var(--m3e-space-3) 0 0
 
 		.password-gate__heading
+			display: grid
+			grid-template-columns: auto minmax(0, 1fr)
+			text-align: left
+			align-items: start
 			gap: var(--m3e-space-3)
+
+		.password-gate__heading-text
+			align-items: start
 
 		.password-gate__heading-icon
 			width: 2.5rem
 			height: 2.5rem
+			border-radius: var(--shape-corner-m)
+			box-shadow: none
+			> :global(svg)
+				width: 1.35rem
+				height: 1.35rem
 
 		.password-gate__heading h2
 			font: var(--m3e-type-title-medium)
@@ -429,6 +398,7 @@ async function unlock() {
 
 		.password-gate__heading p
 			font: var(--m3e-type-body-small)
+			max-width: none
 
 		.password-gate__hint
 			padding: var(--m3e-space-2) var(--m3e-space-3)

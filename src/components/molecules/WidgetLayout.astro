@@ -1,14 +1,15 @@
 ---
 import Button from "@components/atoms/action/Button.svelte";
-import AccentBar from "@components/atoms/display/AccentBar.svelte";
 import Card from "@components/atoms/display/Card.svelte";
+import Icon from "@components/atoms/display/Icon.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import Icon from "@iconify/svelte";
 
 interface Props {
 	id: string;
 	name?: string;
+	icon?: string;
+	badge?: string;
 	isCollapsed?: boolean;
 	collapsedHeight?: string;
 	class?: string;
@@ -21,6 +22,8 @@ interface Props {
 const {
 	id,
 	name,
+	icon,
+	badge,
 	isCollapsed,
 	collapsedHeight,
 	style,
@@ -32,8 +35,15 @@ const className = Astro.props.class;
 <widget-layout data-id={id} data-is-collapsed={String(isCollapsed)} class={className} style={style}>
     <Card color="var(--card-bg)" radius="l" class="pb-4">
     <div class="widget-layout__header">
-        <AccentBar size="small" />
-        <span>{name}</span>
+        <div class="flex items-center gap-2.5">
+            {icon && (
+                <span class="widget-layout__icon-badge" aria-hidden="true">
+                    <Icon icon={icon} />
+                </span>
+            )}
+            <span>{name}</span>
+        </div>
+        {badge && <span class="widget-layout__badge">{badge}</span>}
     </div>
     <div id={id} class:list={["collapse-wrapper px-4 overflow-hidden", {"collapsed": isCollapsed, "widget-layout__scroll-content": scrollContent, "widget-layout__flex-scroll": flexScroll}]}>
         <slot></slot>
@@ -61,12 +71,36 @@ const className = Astro.props.class;
 .widget-layout__header
 	display: flex
 	align-items: center
+	justify-content: space-between
 	gap: var(--m3e-space-2)
 	margin: var(--m3e-space-4) var(--m3e-space-4) var(--m3e-space-2)
 	font: var(--m3e-type-title-medium)
 	font-weight: 600
 	color: var(--on-surface)
 	transition: color var(--m3e-duration-short) var(--m3e-easing-standard)
+
+.widget-layout__icon-badge
+	display: inline-flex
+	align-items: center
+	justify-content: center
+	width: 1.75rem
+	height: 1.75rem
+	border-radius: var(--shape-corner-small, 8px)
+	background: unquote("color-mix(in oklab, var(--primary) 12%, transparent)")
+	color: var(--primary)
+	font-size: 1.125rem
+	flex-shrink: 0
+	transition: background-color var(--m3e-duration-short) var(--m3e-easing-standard), color var(--m3e-duration-short) var(--m3e-easing-standard)
+
+.widget-layout__badge
+	font-size: 0.6875rem
+	font-weight: 600
+	color: var(--on-surface-variant)
+	padding: 0.125rem 0.5rem
+	border-radius: 9999px
+	background: unquote("color-mix(in oklab, var(--surface-container-highest) 70%, transparent)")
+	border: 1px solid unquote("color-mix(in oklab, var(--outline-variant) 30%, transparent)")
+	font-variant-numeric: tabular-nums
 
 .widget-layout__scroll-content
 	max-height: calc(100dvh - 11rem)

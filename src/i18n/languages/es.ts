@@ -289,6 +289,7 @@ export const es: Translation = {
 	[Key.paginationLabel]: "Paginación",
 	[Key.tagsViewAll]: "Ver todas las etiquetas",
 
+	[Key.authorMenu]: "Menú del autor",
 	[Key.author]: "Autor",
 	[Key.publishedAt]: "Publicado el",
 	[Key.lastUpdatedNotice]: "Última actualización el {date}, hace {days} días",

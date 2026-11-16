@@ -6,7 +6,7 @@ import PostMeta from "@components/atoms/blog/PostMeta.astro";
  */
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { formatDateToYYYYMMDD, formatLocalizedDate } from "@utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "@utils/url-utils";
 
 interface Props {
@@ -16,6 +16,9 @@ interface Props {
 	tags: string[];
 	category: string | null;
 	hideUpdateDate?: boolean;
+	localizedDate?: boolean;
+	lang?: string;
+	stacked?: boolean;
 }
 const {
 	class: className,
@@ -24,21 +27,34 @@ const {
 	tags,
 	category,
 	hideUpdateDate = false,
+	localizedDate = false,
+	lang,
+	stacked = false,
 } = Astro.props;
 
 const categoryLink = category
 	? { name: category, href: getCategoryUrl(category) }
 	: null;
 const tagLinks = tags.map((t) => ({ name: t.trim(), href: getTagUrl(t) }));
+
+const formattedPublished = localizedDate
+	? formatLocalizedDate(published, lang)
+	: formatDateToYYYYMMDD(published);
+const formattedUpdated = updated
+	? localizedDate
+		? formatLocalizedDate(updated, lang)
+		: formatDateToYYYYMMDD(updated)
+	: undefined;
 ---
 
 <PostMeta
 	class={className}
-	published={formatDateToYYYYMMDD(published)}
-	updated={updated ? formatDateToYYYYMMDD(updated) : undefined}
+	published={formattedPublished}
+	updated={formattedUpdated}
 	category={categoryLink}
 	tags={tagLinks}
 	hideUpdate={hideUpdateDate}
+	stacked={stacked}
 	uncategorizedLabel={i18n(I18nKey.uncategorized)}
 	noTagsLabel={i18n(I18nKey.noTags)}
 />

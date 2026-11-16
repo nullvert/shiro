@@ -69,7 +69,13 @@ const hasOverflow = seriesItems.length > DISPLAY_LIMIT;
 ---
 
 {seriesItems.length > 0 && (
-	<WidgetLayout name={i18n(I18nKey.series)} id="series" class={className} style={style}>
+	<WidgetLayout
+	name={i18n(I18nKey.series)}
+	icon="material-symbols:view-carousel-outline-rounded"
+	id="series"
+	class={className}
+	style={style}
+>
 		<CategoryList categories={visibleItems} />
 		{hasOverflow && (
 			<div slot="footer" class="widget-index-link">

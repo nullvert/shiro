@@ -27,7 +27,12 @@ export const sidebarConfig: SidebarConfig = withUserConfig("sidebar", {
 	arrangement: "single",
 	side: "right",
 	components: [
-		{ type: "profile", enable: false, slot: "top" },
+		{
+			type: "profile",
+			enable: false,
+			slot: "top",
+			pages: ["home", "moments", "albums"],
+		},
 		{ type: "music", enable: false, slot: "top" },
 		{ type: "announcement", enable: false, slot: "top", pages: ["home"] },
 		{
@@ -101,7 +106,7 @@ export const sidebarConfig: SidebarConfig = withUserConfig("sidebar", {
 			enable: true,
 			slot: "top",
 			column: "primary",
-			pages: ["archive", "categories", "tags", "series"],
+			pages: ["archive", "categories", "tags", "series", "moments", "albums"],
 		},
 		{ type: "calendar", enable: false, slot: "top", column: "primary" },
 		{

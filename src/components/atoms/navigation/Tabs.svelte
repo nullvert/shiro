@@ -247,7 +247,7 @@ function onKeydown(e: KeyboardEvent, idx: number) {
 		position: absolute
 		bottom: 1px /* 在 1dp divider 之上 */
 		height: 3px
-		border-radius: 3px 3px 0 0
+		border-radius: var(--shape-corner-full) var(--shape-corner-full) 0 0 /* M3 ActiveIndicator: top caps clamped to 3px height */
 		background: var(--primary)
 		pointer-events: none
 		opacity: 0

@@ -40,7 +40,7 @@ const style = [
 	flex-shrink: 0
 	width: 0.25rem
 	height: 1.25rem
-	border-radius: var(--m3e-accent-bar-radius, 0.375rem)
+	border-radius: var(--m3e-accent-bar-radius, var(--shape-corner-full))
 	background: var(--m3e-accent-bar-color, var(--primary))
 	vertical-align: middle
 

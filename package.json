@@ -93,6 +93,7 @@
 		"lxgw-wenkai-screen-webfont": "^1.7.0",
 		"markdown-it": "^15.0.3",
 		"mdast-util-to-string": "^4.0.0",
+		"medeo-font": "^1.1.0",
 		"mermaid": "^12.3.0",
 		"oddmisc": "^1.2.11",
 		"overlayscrollbars": "^2.17.0",

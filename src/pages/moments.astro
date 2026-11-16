@@ -20,7 +20,11 @@ const pageDescription = resolveI18nText(
 );
 
 const moments = await getSortedMoments();
-const avatarAsset = await resolveImageAsset(profileConfig.avatar ?? "");
+const authorName = momentsConfig.author?.name ?? profileConfig.name;
+const authorAvatarRaw = momentsConfig.author?.avatar ?? profileConfig.avatar ?? "";
+const authorUrl = momentsConfig.author?.url ?? url("/about/");
+
+const avatarAsset = await resolveImageAsset(authorAvatarRaw);
 let avatar = typeof avatarAsset === "string" ? avatarAsset : avatarAsset.src;
 let avatarSrcset: string | undefined;
 let avatarWidth: number | undefined;
@@ -45,12 +49,12 @@ if (typeof avatarAsset !== "string") {
 	avatarHeight = avatarAsset.height;
 }
 const author = {
-	name: profileConfig.name,
+	name: authorName,
 	avatar,
 	avatarSrcset,
 	avatarWidth,
 	avatarHeight,
-	url: url("/about/"),
+	url: authorUrl,
 };
 ---
 

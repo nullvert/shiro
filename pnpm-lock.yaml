@@ -106,6 +106,9 @@ importers:
       mdast-util-to-string:
         specifier: ^4.0.0
         version: 4.0.0
+      medeo-font:
+        specifier: ^1.1.0
+        version: 1.1.0
       mermaid:
         specifier: ^12.3.0
         version: 12.3.0
@@ -4742,6 +4745,14 @@ packages:
 
   mdurl@2.1.0:
     resolution: {integrity: sha512-1+HBaOx0zi/dQWht8rNv9MYf9qqpqL/kxI0hXImU6Y547zM6Sni8BQibt7ifgMcYtQg41ao3Ivd6cnSM86inpg==}
+
+  medeo-font@1.1.0:
+    resolution: {integrity: sha512-yV5AolfTvbW/bUk60da4H4KGU11FAstmreRv7tvJaikl5UyRl2tNyoc3lGR6OCseC7Qb9E2vqJgUCLxyhWUWog==}
+    peerDependencies:
+      next: '>=13.2.0'
+    peerDependenciesMeta:
+      next:
+        optional: true
 
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
@@ -11935,6 +11946,8 @@ snapshots:
   mdn-data@2.27.1: {}
 
   mdurl@2.1.0: {}
+
+  medeo-font@1.1.0: {}
 
   media-typer@0.3.0: {}
 

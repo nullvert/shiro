@@ -5,19 +5,16 @@
  * 页脚之间留下空洞，长内容也不会挤压作者和二维码区域。
  */
 
-export const SHARE_POSTER_WIDTH = 1080;
+export const SHARE_POSTER_WIDTH = 1280;
+export const SHARE_POSTER_HEIGHT = 720;
 
-const PAGE_PADDING = 64;
-const CONTENT_WIDTH = SHARE_POSTER_WIDTH - PAGE_PADDING * 2;
-const COVER_HEIGHT = 480;
-const NO_COVER_HEADER_HEIGHT = 240;
-const TITLE_FONT_SIZE = 56;
-const TITLE_LINE_HEIGHT = 70;
-const DESCRIPTION_FONT_SIZE = 30;
-const DESCRIPTION_LINE_HEIGHT = 42;
-const FOOTER_HEIGHT = 170;
-const BOTTOM_PADDING = 48;
+const PADDING_X = 72;
+const PADDING_BOTTOM = 52;
+const PADDING_TOP = 64;
+const CONTENT_MAX_WIDTH = 1100;
 const FONT_FAMILY = 'Roboto, system-ui, -apple-system, "Segoe UI", sans-serif';
+const FONT_MONO_FAMILY =
+	'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
 export interface SharePosterPalette {
 	surfaceContainerLowest: string;
@@ -55,18 +52,21 @@ interface DrawableImage {
 	close?: () => void;
 }
 
-interface PosterLayout {
-	hasCover: boolean;
-	headerHeight: number;
-	contentTop: number;
-	titleLines: string[];
-	titleHeight: number;
-	descriptionLines: string[];
-	descriptionTop: number;
-	descriptionHeight: number;
-	dividerY: number;
-	footerY: number;
-	canvasHeight: number;
+/** 格式化日期为 DD/MM/YYYY */
+export function formatDateToDDMMYYYY(dateStr: string): string {
+	if (!dateStr) return "";
+	const d = new Date(dateStr);
+	if (Number.isNaN(d.getTime())) {
+		const parts = dateStr.split(/[-/]/);
+		if (parts.length === 3 && parts[0].length === 4) {
+			return `${parts[2].padStart(2, "0")}/${parts[1].padStart(2, "0")}/${parts[0]}`;
+		}
+		return dateStr;
+	}
+	const day = String(d.getDate()).padStart(2, "0");
+	const month = String(d.getMonth() + 1).padStart(2, "0");
+	const year = d.getFullYear();
+	return `${day}/${month}/${year}`;
 }
 
 /** 净化文件名，移除 Windows / POSIX 非法字符与控制字符。 */
@@ -230,54 +230,6 @@ function wrapTextLines(
 	return lines;
 }
 
-function drawTextEllipsis(
-	ctx: CanvasRenderingContext2D,
-	text: string,
-	x: number,
-	y: number,
-	maxWidth: number,
-) {
-	if (ctx.measureText(text).width <= maxWidth) {
-		ctx.fillText(text, x, y);
-		return;
-	}
-
-	const ellipsis = "\u2026";
-	const graphemes = segmentText(text, "grapheme");
-	while (
-		graphemes.length > 0 &&
-		ctx.measureText(`${graphemes.join("")}${ellipsis}`).width > maxWidth
-	) {
-		graphemes.pop();
-	}
-	ctx.fillText(`${graphemes.join("").trimEnd()}${ellipsis}`, x, y);
-}
-
-function drawRoundedRect(
-	ctx: CanvasRenderingContext2D,
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-	radius: number,
-) {
-	ctx.beginPath();
-	if (typeof ctx.roundRect === "function") {
-		ctx.roundRect(x, y, width, height, radius);
-		return;
-	}
-	ctx.moveTo(x + radius, y);
-	ctx.lineTo(x + width - radius, y);
-	ctx.arcTo(x + width, y, x + width, y + radius, radius);
-	ctx.lineTo(x + width, y + height - radius);
-	ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-	ctx.lineTo(x + radius, y + height);
-	ctx.arcTo(x, y + height, x, y + height - radius, radius);
-	ctx.lineTo(x, y + radius);
-	ctx.arcTo(x, y, x + radius, y, radius);
-	ctx.closePath();
-}
-
 function drawCoverImage(
 	ctx: CanvasRenderingContext2D,
 	image: CanvasImageSource,
@@ -317,247 +269,6 @@ function drawCoverImage(
 	);
 }
 
-function measurePosterLayout(
-	ctx: CanvasRenderingContext2D,
-	input: SharePosterInput,
-	hasCover: boolean,
-): PosterLayout {
-	const headerHeight = hasCover ? COVER_HEIGHT : NO_COVER_HEADER_HEIGHT;
-	const contentTop = headerHeight + PAGE_PADDING;
-
-	ctx.font = `700 ${TITLE_FONT_SIZE}px ${FONT_FAMILY}`;
-	const titleLines = wrapTextLines(
-		ctx,
-		input.title || input.siteTitle,
-		CONTENT_WIDTH,
-		hasCover ? 3 : 4,
-	);
-	const titleHeight = Math.max(1, titleLines.length) * TITLE_LINE_HEIGHT;
-
-	const description =
-		input.description.trim() !== input.title.trim()
-			? input.description.trim()
-			: "";
-	ctx.font = `400 ${DESCRIPTION_FONT_SIZE}px ${FONT_FAMILY}`;
-	const descriptionLines = wrapTextLines(
-		ctx,
-		description,
-		CONTENT_WIDTH,
-		hasCover ? 4 : 5,
-	);
-	const descriptionTop = contentTop + titleHeight + 24;
-	const descriptionHeight = descriptionLines.length * DESCRIPTION_LINE_HEIGHT;
-	const dividerY = descriptionLines.length
-		? descriptionTop + descriptionHeight + 48
-		: contentTop + titleHeight + 40;
-	const footerY = dividerY + 32;
-	const canvasHeight = Math.ceil(footerY + FOOTER_HEIGHT + BOTTOM_PADDING);
-
-	return {
-		hasCover,
-		headerHeight,
-		contentTop,
-		titleLines,
-		titleHeight,
-		descriptionLines,
-		descriptionTop,
-		descriptionHeight,
-		dividerY,
-		footerY,
-		canvasHeight,
-	};
-}
-
-function drawBrandBadge(
-	ctx: CanvasRenderingContext2D,
-	text: string,
-	palette: SharePosterPalette,
-) {
-	ctx.font = `700 26px ${FONT_FAMILY}`;
-	const label = text || "Shirone";
-	const width = Math.min(ctx.measureText(label).width + 40, 520);
-	ctx.fillStyle = palette.primaryContainer;
-	drawRoundedRect(ctx, PAGE_PADDING, 40, width, 52, 26);
-	ctx.fill();
-	ctx.fillStyle = palette.onPrimaryContainer;
-	ctx.textBaseline = "middle";
-	drawTextEllipsis(ctx, label, PAGE_PADDING + 20, 66, width - 40);
-}
-
-function drawCoverHeader(
-	ctx: CanvasRenderingContext2D,
-	cover: CanvasImageSource,
-	input: SharePosterInput,
-) {
-	drawCoverImage(ctx, cover, 0, 0, SHARE_POSTER_WIDTH, COVER_HEIGHT);
-	drawBrandBadge(ctx, input.siteTitle, input.palette);
-
-	ctx.font = `600 25px ${FONT_FAMILY}`;
-	const date = input.published || "";
-	const badgeWidth = Math.min(ctx.measureText(date).width + 40, 320);
-	ctx.fillStyle = input.palette.surfaceContainerLowest;
-	drawRoundedRect(ctx, PAGE_PADDING, COVER_HEIGHT - 88, badgeWidth, 56, 16);
-	ctx.fill();
-	ctx.fillStyle = input.palette.onSurface;
-	ctx.textBaseline = "middle";
-	drawTextEllipsis(
-		ctx,
-		date,
-		PAGE_PADDING + 20,
-		COVER_HEIGHT - 60,
-		badgeWidth - 40,
-	);
-}
-
-function drawNoCoverHeader(
-	ctx: CanvasRenderingContext2D,
-	input: SharePosterInput,
-) {
-	const { palette } = input;
-	ctx.fillStyle = palette.primaryContainer;
-	ctx.fillRect(0, 0, SHARE_POSTER_WIDTH, NO_COVER_HEADER_HEIGHT);
-
-	ctx.fillStyle = palette.primary;
-	drawRoundedRect(ctx, PAGE_PADDING, 60, 10, 120, 5);
-	ctx.fill();
-
-	ctx.fillStyle = palette.onPrimaryContainer;
-	ctx.textBaseline = "top";
-	ctx.font = `700 46px ${FONT_FAMILY}`;
-	drawTextEllipsis(
-		ctx,
-		input.siteTitle || "Shirone",
-		PAGE_PADDING + 36,
-		62,
-		CONTENT_WIDTH - 36,
-	);
-	ctx.font = `400 28px ${FONT_FAMILY}`;
-	drawTextEllipsis(
-		ctx,
-		input.published,
-		PAGE_PADDING + 36,
-		128,
-		CONTENT_WIDTH - 36,
-	);
-}
-
-function drawArticleContent(
-	ctx: CanvasRenderingContext2D,
-	input: SharePosterInput,
-	layout: PosterLayout,
-) {
-	const { palette } = input;
-	ctx.textBaseline = "top";
-	ctx.fillStyle = palette.onSurface;
-	ctx.font = `700 ${TITLE_FONT_SIZE}px ${FONT_FAMILY}`;
-	layout.titleLines.forEach((line, index) => {
-		ctx.fillText(
-			line,
-			PAGE_PADDING,
-			layout.contentTop + index * TITLE_LINE_HEIGHT,
-		);
-	});
-
-	if (layout.descriptionLines.length > 0) {
-		ctx.fillStyle = palette.onSurfaceVariant;
-		ctx.font = `400 ${DESCRIPTION_FONT_SIZE}px ${FONT_FAMILY}`;
-		layout.descriptionLines.forEach((line, index) => {
-			ctx.fillText(
-				line,
-				PAGE_PADDING,
-				layout.descriptionTop + index * DESCRIPTION_LINE_HEIGHT,
-			);
-		});
-	}
-
-	ctx.strokeStyle = palette.outlineVariant;
-	ctx.lineWidth = 2;
-	ctx.beginPath();
-	ctx.moveTo(PAGE_PADDING, layout.dividerY);
-	ctx.lineTo(SHARE_POSTER_WIDTH - PAGE_PADDING, layout.dividerY);
-	ctx.stroke();
-}
-
-function drawAvatar(
-	ctx: CanvasRenderingContext2D,
-	input: SharePosterInput,
-	avatar: CanvasImageSource | null,
-	x: number,
-	y: number,
-	size: number,
-) {
-	ctx.save();
-	ctx.beginPath();
-	ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
-	ctx.clip();
-	if (avatar) {
-		drawCoverImage(ctx, avatar, x, y, size, size);
-	} else {
-		ctx.fillStyle = input.palette.primaryContainer;
-		ctx.fillRect(x, y, size, size);
-		const initial = segmentText(input.author || "A", "grapheme")[0] || "A";
-		ctx.fillStyle = input.palette.onPrimaryContainer;
-		ctx.font = `700 42px ${FONT_FAMILY}`;
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		ctx.fillText(initial.toUpperCase(), x + size / 2, y + size / 2);
-	}
-	ctx.restore();
-	ctx.textAlign = "left";
-}
-
-function drawFooter(
-	ctx: CanvasRenderingContext2D,
-	input: SharePosterInput,
-	layout: PosterLayout,
-	avatar: CanvasImageSource | null,
-	qrCanvas: HTMLCanvasElement,
-) {
-	const { palette } = input;
-	const avatarSize = 104;
-	const avatarX = PAGE_PADDING;
-	const avatarY = layout.footerY + 26;
-	drawAvatar(ctx, input, avatar, avatarX, avatarY, avatarSize);
-
-	const qrSize = 150;
-	const qrX = SHARE_POSTER_WIDTH - PAGE_PADDING - qrSize;
-	const qrY = layout.footerY + 10;
-	const textX = avatarX + avatarSize + 24;
-	const textWidth = qrX - 36 - textX;
-
-	ctx.textBaseline = "top";
-	ctx.fillStyle = palette.onSurfaceVariant;
-	ctx.font = `400 21px ${FONT_FAMILY}`;
-	ctx.fillText(input.labels.author, textX, layout.footerY + 12);
-	ctx.fillStyle = palette.onSurface;
-	ctx.font = `700 32px ${FONT_FAMILY}`;
-	drawTextEllipsis(
-		ctx,
-		input.author || input.siteTitle,
-		textX,
-		layout.footerY + 40,
-		textWidth,
-	);
-
-	ctx.fillStyle = palette.onSurfaceVariant;
-	ctx.font = `400 21px ${FONT_FAMILY}`;
-	ctx.fillText(input.labels.scanToRead, textX, layout.footerY + 94);
-	ctx.fillStyle = palette.onSurface;
-	ctx.font = `700 30px ${FONT_FAMILY}`;
-	drawTextEllipsis(
-		ctx,
-		input.siteTitle,
-		textX,
-		layout.footerY + 122,
-		textWidth,
-	);
-
-	ctx.fillStyle = "#ffffff";
-	drawRoundedRect(ctx, qrX, qrY, qrSize, qrSize, 16);
-	ctx.fill();
-	ctx.drawImage(qrCanvas, qrX + 7, qrY + 7, qrSize - 14, qrSize - 14);
-}
-
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 	return new Promise((resolve, reject) => {
 		canvas.toBlob((blob) => {
@@ -567,7 +278,14 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 	});
 }
 
-/** 生成宽度固定、内容高度自适应的分享海报。 */
+/**
+ * 绘制 16:9 横版分享海报：
+ * - 全尺寸背景封面或主色渐变
+ * - 暗色蒙版保证文字对比度
+ * - 顶部/左上：日期 (DD/MM/YYYY)
+ * - 中部：大标题 + 描述摘要
+ * - 底部：左侧作者，右侧站点域名
+ */
 export async function generateSharePoster(
 	input: SharePosterInput,
 ): Promise<Blob> {
@@ -583,53 +301,165 @@ export async function generateSharePoster(
 		}
 	}
 
-	const qrcodeModule = await import("qrcode");
-	const QRCode =
-		(qrcodeModule as unknown as { default: typeof qrcodeModule }).default ||
-		qrcodeModule;
-	const [coverImage, avatarImage] = await Promise.all([
-		loadDrawableImage(input.coverUrl, input.signal),
-		loadDrawableImage(input.avatarUrl, input.signal),
-	]);
+	const coverImage = await loadDrawableImage(input.coverUrl, input.signal);
 
 	try {
 		if (input.signal?.aborted) {
 			throw new DOMException("Poster generation aborted", "AbortError");
 		}
 
-		const qrCanvas = document.createElement("canvas");
-		await QRCode.toCanvas(qrCanvas, input.url, {
-			width: 256,
-			margin: 1,
-			errorCorrectionLevel: "M",
-			color: { dark: "#000000", light: "#ffffff" },
-		});
-
 		const canvas = document.createElement("canvas");
 		canvas.width = SHARE_POSTER_WIDTH;
-		const measureContext = canvas.getContext("2d");
-		if (!measureContext) throw new Error("Unable to create 2d canvas context");
+		canvas.height = SHARE_POSTER_HEIGHT;
 
-		const layout = measurePosterLayout(
-			measureContext,
-			input,
-			Boolean(coverImage),
-		);
-		canvas.height = layout.canvasHeight;
 		const ctx = canvas.getContext("2d");
 		if (!ctx) throw new Error("Unable to create 2d canvas context");
 
-		ctx.fillStyle = input.palette.surfaceContainerLowest;
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-		if (coverImage) drawCoverHeader(ctx, coverImage.source, input);
-		else drawNoCoverHeader(ctx, input);
+		// 1. 绘制背景
+		if (coverImage) {
+			drawCoverImage(
+				ctx,
+				coverImage.source,
+				0,
+				0,
+				SHARE_POSTER_WIDTH,
+				SHARE_POSTER_HEIGHT,
+			);
+		} else {
+			// 无封面时使用主题渐变
+			const gradient = ctx.createLinearGradient(
+				0,
+				0,
+				SHARE_POSTER_WIDTH,
+				SHARE_POSTER_HEIGHT,
+			);
+			gradient.addColorStop(0, input.palette.primary);
+			gradient.addColorStop(1, input.palette.onPrimaryContainer);
+			ctx.fillStyle = gradient;
+			ctx.fillRect(0, 0, SHARE_POSTER_WIDTH, SHARE_POSTER_HEIGHT);
+		}
 
-		drawArticleContent(ctx, input, layout);
-		drawFooter(ctx, input, layout, avatarImage?.source || null, qrCanvas);
+		// 2. 绘制暗色渐变遮罩 (阴影蒙版)，确保白色文字清晰可辨
+		const overlayGradient = ctx.createLinearGradient(
+			0,
+			0,
+			0,
+			SHARE_POSTER_HEIGHT,
+		);
+		overlayGradient.addColorStop(0, "rgba(10, 15, 25, 0.45)");
+		overlayGradient.addColorStop(0.4, "rgba(10, 15, 25, 0.65)");
+		overlayGradient.addColorStop(1, "rgba(10, 15, 25, 0.92)");
+		ctx.fillStyle = overlayGradient;
+		ctx.fillRect(0, 0, SHARE_POSTER_WIDTH, SHARE_POSTER_HEIGHT);
+
+		// 3. 计算排版
+		// 日期 (DD/MM/YYYY)
+		const formattedDate = formatDateToDDMMYYYY(input.published);
+
+		// 测量标题与描述
+		const titleFontSize = 54;
+		const titleLineHeight = 68;
+		ctx.font = `800 ${titleFontSize}px ${FONT_FAMILY}`;
+		const titleLines = wrapTextLines(
+			ctx,
+			input.title || input.siteTitle,
+			CONTENT_MAX_WIDTH,
+			2,
+		);
+
+		const descFontSize = 24;
+		const descLineHeight = 36;
+		const description =
+			input.description.trim() !== input.title.trim()
+				? input.description.trim()
+				: "";
+		ctx.font = `400 ${descFontSize}px ${FONT_FAMILY}`;
+		const descLines = description
+			? wrapTextLines(ctx, description, CONTENT_MAX_WIDTH, 2)
+			: [];
+
+		// 排版高度计算
+		const dateHeight = formattedDate ? 28 : 0;
+		const dateGap = formattedDate ? 14 : 0;
+		const titleHeight = titleLines.length * titleLineHeight;
+		const descGap = descLines.length > 0 ? 18 : 0;
+		const descHeight = descLines.length * descLineHeight;
+
+		const totalBlockHeight =
+			dateHeight + dateGap + titleHeight + descGap + descHeight;
+
+		// Привязка контента к нижней трети (как на референсе: персонаж по центру виден сверху,
+		// а текст начинается на уровне бедер/пояса)
+		const footerAreaHeight = 64;
+		const availableBottom =
+			SHARE_POSTER_HEIGHT - PADDING_BOTTOM - footerAreaHeight;
+		const contentStartY = Math.max(
+			PADDING_TOP + 60,
+			availableBottom - totalBlockHeight - 16,
+		);
+
+		let currentY = contentStartY;
+
+		// 4. 绘制日期 (Mono, Medium 500)
+		if (formattedDate) {
+			ctx.font = `500 21px ${FONT_MONO_FAMILY}`;
+			ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+			ctx.textBaseline = "top";
+			ctx.fillText(formattedDate, PADDING_X, currentY);
+			currentY += dateHeight + dateGap;
+		}
+
+		// 5. 绘制标题
+		ctx.font = `800 ${titleFontSize}px ${FONT_FAMILY}`;
+		ctx.fillStyle = "#ffffff";
+		ctx.textBaseline = "top";
+		// 细微阴影提升边缘清晰度
+		ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+		ctx.shadowBlur = 14;
+		ctx.shadowOffsetX = 0;
+		ctx.shadowOffsetY = 2;
+
+		titleLines.forEach((line, index) => {
+			ctx.fillText(line, PADDING_X, currentY + index * titleLineHeight);
+		});
+		currentY += titleHeight + descGap;
+
+		// 6. 绘制描述
+		ctx.shadowBlur = 0;
+		ctx.shadowOffsetY = 0;
+		if (descLines.length > 0) {
+			ctx.font = `400 ${descFontSize}px ${FONT_FAMILY}`;
+			ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+			descLines.forEach((line, index) => {
+				ctx.fillText(line, PADDING_X, currentY + index * descLineHeight);
+			});
+		}
+
+		// 7. 绘制底部行 (Footer)
+		const footerY = SHARE_POSTER_HEIGHT - PADDING_BOTTOM;
+		ctx.textBaseline = "bottom";
+
+		// 左下角：Javohir · nullvert.uz
+		const leftText = "Javohir";
+		const dotText = " · ";
+		const rightText = "nullvert.uz";
+
+		ctx.font = `500 24px ${FONT_MONO_FAMILY}`;
+		ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+		ctx.textAlign = "left";
+
+		ctx.fillText(leftText, PADDING_X, footerY);
+		const leftWidth = ctx.measureText(leftText).width;
+
+		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+		ctx.fillText(dotText, PADDING_X + leftWidth, footerY);
+		const dotWidth = ctx.measureText(dotText).width;
+
+		ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+		ctx.fillText(rightText, PADDING_X + leftWidth + dotWidth, footerY);
 
 		return await canvasToBlob(canvas);
 	} finally {
 		coverImage?.close?.();
-		avatarImage?.close?.();
 	}
 }

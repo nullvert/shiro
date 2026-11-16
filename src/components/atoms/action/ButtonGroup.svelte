@@ -261,17 +261,17 @@ function handleChange(item: ButtonGroupItem) {
     &--connected
         gap: 2px
         :global(.m3-toggle-button)
-            border-radius: 4px
+            border-radius: var(--shape-corner-xs)
         /* 首项：外侧全圆 + 内侧 8px；按压内角 8→4px */
         :global(.m3-button-group__item--first)
-            border-radius: var(--shape-corner-full) 8px 8px var(--shape-corner-full)
+            border-radius: var(--shape-corner-full) var(--shape-corner-s) var(--shape-corner-s) var(--shape-corner-full)
         :global(.m3-button-group__item--first:active)
-            border-radius: var(--shape-corner-full) 4px 4px var(--shape-corner-full)
+            border-radius: var(--shape-corner-full) var(--shape-corner-xs) var(--shape-corner-xs) var(--shape-corner-full)
         /* 尾项：外侧全圆 + 内侧 8px；按压内角 8→4px */
         :global(.m3-button-group__item--last)
-            border-radius: 8px var(--shape-corner-full) var(--shape-corner-full) 8px
+            border-radius: var(--shape-corner-s) var(--shape-corner-full) var(--shape-corner-full) var(--shape-corner-s)
         :global(.m3-button-group__item--last:active)
-            border-radius: 4px var(--shape-corner-full) var(--shape-corner-full) 4px
+            border-radius: var(--shape-corner-xs) var(--shape-corner-full) var(--shape-corner-full) var(--shape-corner-xs)
         /* 选中项：全圆 pill（官方 connectedButtonCheckedShape = CornerFull） */
         :global(.m3-toggle-button--checked)
             border-radius: var(--shape-corner-full)

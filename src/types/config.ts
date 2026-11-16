@@ -92,6 +92,7 @@ export type SiteConfig = {
 
 	lang:
 		| "en"
+		| "ru"
 		| "zh_CN"
 		| "zh_TW"
 		| "ja"

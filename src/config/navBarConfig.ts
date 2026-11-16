@@ -119,7 +119,7 @@ export const LinkPresets: Record<string, NavBarLink> = {
 	Series: {
 		name: i18n(I18nKey.series),
 		url: "/series/",
-		icon: "material-symbols:auto-stories-outline-rounded",
+		icon: "material-symbols:view-carousel-outline-rounded",
 		pageKey: "series",
 	},
 	About: {

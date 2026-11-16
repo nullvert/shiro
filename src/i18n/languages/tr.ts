@@ -289,6 +289,7 @@ export const tr: Translation = {
 	[Key.paginationLabel]: "Sayfalandırma",
 	[Key.tagsViewAll]: "Tüm etiketleri gör",
 
+	[Key.authorMenu]: "Yazar Menüsü",
 	[Key.author]: "Yazar",
 	[Key.publishedAt]: "Yayınlanma:",
 	[Key.lastUpdatedNotice]: "Son güncelleme: {date}, {days} gün önce",

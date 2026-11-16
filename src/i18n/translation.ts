@@ -13,6 +13,7 @@ import { tr } from "./languages/tr.ts";
 import { vi } from "./languages/vi.ts";
 import { zh_CN } from "./languages/zh_CN.ts";
 import { zh_TW } from "./languages/zh_TW.ts";
+import { ru } from "./languages/ru.ts";
 
 export type Translation = {
 	[K in I18nKey]: string;
@@ -39,6 +40,8 @@ const map: { [key: string]: Translation } = {
 	id: id,
 	tr: tr,
 	tr_tr: tr,
+	ru: ru,
+	ru_ru: ru,
 };
 
 export function getTranslation(lang: string): Translation {

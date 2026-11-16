@@ -93,16 +93,18 @@ function toggleGroup(id: string) {
 				onclick={() => toggleGroup(g.id)}
 			>
 				<span class="m3-blog-archive__group-title">{g.title}</span>
-				<span class="m3-blog-archive__dot" aria-hidden="true"></span>
-				<span class="m3-blog-archive__count">{countLabel(g.items.length)}</span>
-				<span
-					class="m3-blog-archive__chevron"
-					class:m3-blog-archive__chevron--open={!collapsed[g.id]}
-					aria-hidden="true"
-				>
-					<Icon icon="material-symbols:keyboard-arrow-down" />
-				</span>
+				<div class="m3-blog-archive__group-meta">
+					<span class="m3-blog-archive__count">{countLabel(g.items.length)}</span>
+					<span
+						class="m3-blog-archive__chevron"
+						class:m3-blog-archive__chevron--open={!collapsed[g.id]}
+						aria-hidden="true"
+					>
+						<Icon icon="material-symbols:keyboard-arrow-down-rounded" />
+					</span>
+				</div>
 			</button>
+
 			<div
 				class="m3-blog-archive__body"
 				use:collapse={{
@@ -113,18 +115,12 @@ function toggleGroup(id: string) {
 			>
 				<ul class="m3-blog-archive__list">
 					{#each g.items as it (it.href)}
-						<li>
+						<li class="m3-blog-archive__row">
 							<a class="m3-blog-archive__item" href={it.href}>
-								<span class="m3-blog-archive__date">{it.date}</span>
-								<span class="m3-blog-archive__node" aria-hidden="true"></span>
-								<span class="m3-blog-archive__title">
-									{#if it.category}
-										<span class="m3-blog-archive__cat">{it.category}</span>
-									{/if}
-									<span class="m3-blog-archive__title-text">{it.title}</span>
-								</span>
-								{#if it.tags && it.tags.length > 0}
-									<span class="m3-blog-archive__tags">{it.tags.map((t) => `#${t}`).join(" ")}</span>
+								<time class="m3-blog-archive__date">{it.date}</time>
+								<span class="m3-blog-archive__title-text">{it.title}</span>
+								{#if it.category}
+									<span class="m3-blog-archive__cat">{it.category}</span>
 								{/if}
 							</a>
 						</li>
@@ -145,11 +141,9 @@ function toggleGroup(id: string) {
 	&__header
 		display: flex
 		align-items: center
-		gap: 1rem
+		justify-content: space-between
 		width: 100%
-		height: 3.75rem
-		box-sizing: border-box
-		padding: 0 0.75rem 0 0.5rem
+		padding: 0.75rem 0.75rem
 		border: none
 		border-radius: var(--shape-corner-m)
 		background: transparent
@@ -160,66 +154,60 @@ function toggleGroup(id: string) {
 		--m3e-state-color: var(--on-surface)
 		transition:
 			background-color var(--m3e-duration-short) var(--m3e-easing-standard),
-			border-radius var(--m3e-duration-medium) var(--m3e-easing-emphasized-decelerate),
-			box-shadow var(--m3e-duration-short) var(--m3e-easing-standard),
-			transform var(--m3e-duration-short) var(--m3e-easing-standard)
+			color var(--m3e-duration-short) var(--m3e-easing-standard)
+
 		&:hover
-			background: var(--surface-container)
-			border-radius: var(--shape-corner-l)
-			box-shadow: var(--m3e-elevation-1)
+			background: unquote("color-mix(in oklab, var(--on-surface) 5%, transparent)")
+
 		&:active
-			background: unquote("color-mix(in oklab, var(--primary) 7%, transparent)")
-			border-radius: var(--shape-corner-l)
-			box-shadow: var(--m3e-elevation-1)
-			transform: translateY(1px)
+			background: unquote("color-mix(in oklab, var(--on-surface) 8%, transparent)")
+
 		&:focus-visible
-			outline-offset: -2px
-		&:focus-within:not(:focus-visible)::before
-			opacity: 0
+			outline: 2px solid var(--primary)
+			outline-offset: 2px
 
 	&__group-title
-		flex: 1 1 auto
-		min-width: 3.5rem
-		text-align: left
-		font: var(--m3e-type-title-large)
+		font-family: inherit
+		font-size: 1.375rem
 		font-weight: 700
+		letter-spacing: -0.02em
 		color: var(--on-surface)
-		white-space: nowrap
-		overflow: hidden
-		text-overflow: ellipsis
+		line-height: 1.2
 
-	&__dot
-		flex-shrink: 0
-		width: 0.75rem
-		height: 0.75rem
-		border-radius: var(--shape-corner-full)
-		border: 3px solid var(--primary)
-		background: var(--surface)
+	&__group-meta
+		display: flex
+		align-items: center
+		gap: 0.625rem
 
 	&__count
-		font: var(--m3e-type-body-small)
+		display: inline-flex
+		align-items: center
+		padding: 0.125rem 0.5rem
+		border-radius: var(--shape-corner-full)
+		background: var(--surface-container-high)
+		font-size: 0.75rem
+		font-weight: 500
 		color: var(--on-surface-variant)
+		line-height: 1.3
 
 	&__chevron
 		display: inline-flex
 		align-items: center
 		justify-content: center
-		flex-shrink: 0
-		width: 2rem
-		height: 2rem
-		margin-left: auto
+		width: 1.75rem
+		height: 1.75rem
 		border-radius: var(--shape-corner-full)
 		color: var(--on-surface-variant)
 		transition:
 			color var(--m3e-duration-short) var(--m3e-easing-standard),
-			transform var(--m3e-duration-short) var(--m3e-easing-emphasized-decelerate)
+			transform var(--m3e-duration-medium) var(--m3e-easing-emphasized-decelerate)
+
 		> :global(svg)
 			width: 1.25rem
 			height: 1.25rem
+
 		.m3-blog-archive__header:hover &
-			color: var(--primary)
-		.m3-blog-archive__header:active &
-			color: var(--primary)
+			color: var(--on-surface)
 
 		&--open
 			transform: rotate(180deg)
@@ -231,118 +219,101 @@ function toggleGroup(id: string) {
 		margin: 0
 		padding: 0
 
+	&__row
+		border-bottom: 1px solid unquote("color-mix(in oklab, var(--outline-variant) 25%, transparent)")
+		&:last-child
+			border-bottom: none
+
 	&__item
-		display: flex
+		display: grid
+		grid-template-columns: 5.5rem 1fr auto
 		align-items: center
-		gap: 0.75rem
+		gap: 1.5rem
 		width: 100%
-		min-height: 2.5rem
-		padding: 0.25rem 0.5rem
+		padding: 0.875rem 0.75rem
 		border-radius: var(--shape-corner-s)
 		text-decoration: none
-		transition: background-color var(--m3e-duration-short) var(--m3e-easing-standard)
+		color: inherit
+		transition:
+			background-color var(--m3e-duration-short) var(--m3e-easing-standard),
+			transform var(--m3e-duration-short) var(--m3e-easing-standard)
+
 		&:hover
-			background: unquote("color-mix(in oklab, var(--on-surface) 5%, transparent)")
-		&:active
-			background: unquote("color-mix(in oklab, var(--on-surface) 10%, transparent)")
+			background: unquote("color-mix(in oklab, var(--on-surface) 6%, transparent)")
+
+			.m3-blog-archive__title-text
+				color: var(--primary)
+
+			.m3-blog-archive__date
+				color: var(--on-surface)
+
+			.m3-blog-archive__cat
+				background: unquote("color-mix(in oklab, var(--primary) 15%, var(--surface-container-high))")
+				color: var(--primary)
+
 		&:focus-visible
-			outline: 2px solid var(--secondary)
+			outline: 2px solid var(--primary)
 			outline-offset: -2px
 
 	&__date
-		flex-shrink: 0
-		width: 4rem
-		font: var(--m3e-type-body-small)
+		font-family: var(--font-mono, monospace)
+		font-size: 0.8125rem
+		font-weight: 500
+		letter-spacing: 0.02em
 		color: var(--on-surface-variant)
-
-	&__node
-		flex-shrink: 0
-		width: 0.375rem
-		height: 0.375rem
-		border-radius: var(--shape-corner-full)
-		background: var(--on-surface-variant)
-		transition:
-			background-color var(--m3e-duration-short) var(--m3e-easing-standard),
-			transform var(--m3e-duration-short) var(--m3e-easing-emphasized-decelerate)
-		.m3-blog-archive__item:hover &
-			background: var(--primary)
-			transform: scale(1.6)
-
-	&__title
-		flex: 1
-		min-width: 0
-		display: flex
-		align-items: center
-		gap: 0.5rem
-		font: var(--m3e-type-body-medium)
-		font-weight: 700
-		color: var(--on-surface)
-		transition:
-			color var(--m3e-duration-short) var(--m3e-easing-standard),
-			transform var(--m3e-duration-short) var(--m3e-easing-emphasized-decelerate)
-		.m3-blog-archive__item:hover &
-			color: var(--primary)
-			transform: translateX(0.25rem)
+		white-space: nowrap
+		transition: color var(--m3e-duration-short) var(--m3e-easing-standard)
 
 	&__title-text
-		min-width: 0
-		overflow: hidden
-		text-overflow: ellipsis
-		white-space: nowrap
+		font-size: 0.9375rem
+		font-weight: 500
+		line-height: 1.4
+		color: var(--on-surface)
+		transition: color var(--m3e-duration-short) var(--m3e-easing-standard)
+		overflow-wrap: anywhere
 
 	&__cat
-		flex-shrink: 0
-		display: inline-flex
-		align-items: center
-		height: 1.25rem
-		padding: 0 0.375rem
-		border-radius: var(--shape-corner-xs)
-		background: var(--primary-container)
-		color: var(--on-primary-container)
-		font: var(--m3e-type-label-small)
-		font-weight: 600
+		font-size: 0.75rem
+		font-weight: 500
+		color: var(--on-surface-variant)
+		white-space: nowrap
+		padding: 0.125rem 0.625rem
+		border-radius: var(--shape-corner-full)
+		background: var(--surface-container)
 		transition:
 			background-color var(--m3e-duration-short) var(--m3e-easing-standard),
 			color var(--m3e-duration-short) var(--m3e-easing-standard)
-		.m3-blog-archive__item:hover &
-			background: var(--primary)
-			color: var(--on-primary)
-
-	&__tags
-		flex-shrink: 1
-		min-width: 0
-		overflow: hidden
-		text-overflow: ellipsis
-		white-space: nowrap
-		max-width: 20%
-		font: var(--m3e-type-body-small)
-		color: var(--on-surface-variant)
-		@media (max-width: bp-md - 1px)
-			display: none
 
 	@media (max-width: bp-sm - 1px)
 		&__group + &__group
-			margin-top: 1rem
-		&__header
-			gap: 0.75rem
-			padding-right: 0.5rem
-		&__group-title
-			min-width: 3.25rem
-		&__item
-			gap: 0.5rem
-		&__date
-			width: 3.5rem
-		&__cat
-			max-width: 6rem
-			overflow: hidden
-			text-overflow: ellipsis
-			white-space: nowrap
+			margin-top: 1.25rem
 
-	@media (hover: none)
-		&__header:not(:active)
-			background: transparent
-			box-shadow: none
-			transform: none
-			&::before
-				opacity: 0
+		&__header
+			padding: 0.5rem 0.25rem
+
+		&__group-title
+			font-size: 1.125rem
+
+		&__count
+			font-size: 0.6875rem
+			padding: 0.0625rem 0.375rem
+
+		&__chevron
+			width: 1.5rem
+			height: 1.5rem
+
+		&__item
+			grid-template-columns: 3.5rem 1fr
+			gap: 0.625rem
+			padding: 0.625rem 0.25rem
+
+		&__date
+			font-size: 0.75rem
+
+		&__title-text
+			font-size: 0.8125rem
+			line-height: 1.35
+
+		&__cat
+			display: none
 </style>

@@ -286,6 +286,7 @@ export const ko: Translation = {
 	[Key.paginationLabel]: "페이지 탐색",
 	[Key.tagsViewAll]: "모든 태그 보기",
 
+	[Key.authorMenu]: "작성자 메뉴",
 	[Key.author]: "저자",
 	[Key.publishedAt]: "게시일",
 	[Key.lastUpdatedNotice]: "마지막 업데이트: {date} ({days}일 전)",

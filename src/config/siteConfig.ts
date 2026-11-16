@@ -27,12 +27,12 @@ export const siteConfig: SiteConfig = withUserConfig("site", {
 		reduceMotion: false, // 是否展示减少动效切换
 		texture: false, // 是否展示背景纹理选择
 	},
-	lang: "en", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
+	lang: "ru", // Language code, e.g. 'ru', 'en', 'zh_CN', 'ja', etc.
 	// IANA time zone for precise post and moment timestamps. It is independent of lang.
 	timeZone: "Asia/Tashkent",
 	themeColor: {
 		hue: 160, // Default hue 0-360. 站点设计默认粉紫（偏二次元）；262 紫 / 345 粉 也可选
-		fixed: false, // Hide the theme color picker for visitors
+		fixed: true, // Hide the theme color picker for visitors
 		// Dynamic Material 3 palette style (TonalSpot/Vibrant/Content/Expressive/Rainbow/FruitSalad/Monochrome/Neutral/Fidelity)
 		style: "content",
 		// Design spec version: "2021" (MD3) or "2025" (M3 Expressive)。角色集一致，

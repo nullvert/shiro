@@ -286,6 +286,7 @@ export const ja: Translation = {
 	[Key.paginationLabel]: "ページ切り替え",
 	[Key.tagsViewAll]: "すべてのタグを見る",
 
+	[Key.authorMenu]: "作成者メニュー",
 	[Key.author]: "作者",
 	[Key.publishedAt]: "公開日",
 	[Key.lastUpdatedNotice]: "最終更新日: {date}（{days}日前）",

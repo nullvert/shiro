@@ -53,7 +53,7 @@ test.describe("Markdown admonitions", () => {
 
 		expect(geometry.background).not.toBe("rgba(0, 0, 0, 0)");
 		expect(geometry.borderInlineStartWidth).toBe(4);
-		expect(geometry.borderRadius).toBeGreaterThanOrEqual(12);
+		expect(geometry.borderRadius).toBe(0);
 		expect(geometry.titleFontSize).toBeGreaterThan(0);
 
 		const details = page.locator("details.m3-admonition");

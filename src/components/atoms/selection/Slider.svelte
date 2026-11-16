@@ -55,7 +55,7 @@ let {
         appearance: none
         height: 1rem
         width: 0.5rem
-        border-radius: 0.125rem
+        border-radius: 0.125rem /* M3 Slider thumb handle shape: 2dp */
         background: rgba(255, 255, 255, 0.7)
         box-shadow: unquote("0 0 0 1px color-mix(in oklab, var(--on-surface) 35%, transparent)")
         &:hover
@@ -66,7 +66,7 @@ let {
     &::-moz-range-thumb
         height: 1rem
         width: 0.5rem
-        border-radius: 0.125rem
+        border-radius: 0.125rem /* M3 Slider thumb handle shape: 2dp */
         background: rgba(255, 255, 255, 0.7)
         box-shadow: unquote("0 0 0 1px color-mix(in oklab, var(--on-surface) 35%, transparent)")
         &:hover
@@ -77,7 +77,7 @@ let {
     &::-ms-thumb
         height: 1rem
         width: 0.5rem
-        border-radius: 0.125rem
+        border-radius: 0.125rem /* M3 Slider thumb handle shape: 2dp */
         background: rgba(255, 255, 255, 0.7)
         box-shadow: unquote("0 0 0 1px color-mix(in oklab, var(--on-surface) 35%, transparent)")
         &:hover

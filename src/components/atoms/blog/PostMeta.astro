@@ -22,12 +22,22 @@ interface Props {
 	updated?: string;
 	category?: BlogMetaLink | null;
 	tags?: BlogMetaLink[];
+	/** 是否置顶 */
+	pinned?: boolean;
+	/** 是否加密 */
+	encrypted?: boolean;
 	/** 字数展示文本（如 "1426 words"，渲染在分类右侧） */
 	wordCount?: string;
 	/** 隐藏标签段 */
 	hideTags?: boolean;
+	/** 隐藏发布日期 */
+	hideDate?: boolean;
 	/** 隐藏更新日期 */
 	hideUpdate?: boolean;
+	/** 隐藏常规元信息图标（保留置顶/加密徽标，文本间显示中圆点分隔符） */
+	hideIcons?: boolean;
+	/** 是否分两行展示：第一行（置顶/加密/日期/分类/字数），第二行（标签） */
+	stacked?: boolean;
 	/** 无分类时的占位文案 */
 	uncategorizedLabel?: string;
 	/** 无标签时的占位文案 */
@@ -40,31 +50,64 @@ const {
 	updated,
 	category,
 	tags = [],
+	pinned = false,
+	encrypted = false,
 	wordCount,
 	hideTags = false,
+	hideDate = false,
 	hideUpdate = false,
+	hideIcons = false,
+	stacked = false,
 	uncategorizedLabel = i18n(I18nKey.uncategorized),
 	noTagsLabel = i18n(I18nKey.noTags),
 } = Astro.props;
 ---
 
-<div class:list={["m3-blog-postmeta", className]}>
-	{published && (
+<div class:list={["m3-blog-postmeta", { "m3-blog-postmeta--plain": hideIcons, "m3-blog-postmeta--stacked": stacked }, className]}>
+	<div class="m3-blog-postmeta__row">
+	{pinned && (
+		<span
+			class="m3-blog-postmeta__item m3-blog-postmeta__item--pinned"
+			title={i18n(I18nKey.pinned)}
+			aria-label={i18n(I18nKey.pinned)}
+		>
+			<MetaIcon
+				class="m3-blog-postmeta__badge-icon m3-blog-postmeta__badge-icon--pinned"
+				icon="material-symbols:keep-rounded"
+			/>
+		</span>
+	)}
+
+	{encrypted && (
+		<span
+			class="m3-blog-postmeta__item m3-blog-postmeta__item--encrypted"
+			title={i18n(I18nKey.postEncryptedBadge)}
+			aria-label={i18n(I18nKey.postEncryptedBadge)}
+		>
+			<MetaIcon
+				class="m3-blog-postmeta__badge-icon m3-blog-postmeta__badge-icon--encrypted"
+				icon="material-symbols:lock-rounded"
+			/>
+		</span>
+	)}
+
+	{!hideDate && !hideUpdate && updated && updated !== published && (
+		<span class="m3-blog-postmeta__item" title={published ? `Published: ${published}` : undefined}>
+			{hideIcons && <span class="m3-blog-postmeta__dot" aria-hidden="true">·</span>}
+			{!hideIcons && <MetaIcon icon="material-symbols:edit-calendar-outline-rounded" />}
+			<span class="m3-blog-postmeta__text">{updated}</span>
+		</span>
+	)}
+	{!hideDate && (hideUpdate || !updated || updated === published) && published && (
 		<span class="m3-blog-postmeta__item">
-			<MetaIcon icon="material-symbols:calendar-today-outline-rounded" />
+			{!hideIcons && <MetaIcon icon="material-symbols:calendar-today-outline-rounded" />}
 			<span class="m3-blog-postmeta__text">{published}</span>
 		</span>
 	)}
 
-	{!hideUpdate && updated && updated !== published && (
-		<span class="m3-blog-postmeta__item">
-			<MetaIcon icon="material-symbols:edit-calendar-outline-rounded" />
-			<span class="m3-blog-postmeta__text">{updated}</span>
-		</span>
-	)}
-
 	<span class="m3-blog-postmeta__item">
-		<MetaIcon icon="material-symbols:book-2-outline-rounded" />
+		{hideIcons && !hideDate && published && <span class="m3-blog-postmeta__dot" aria-hidden="true">·</span>}
+		<MetaIcon icon="material-symbols:folder-outline-rounded" />
 		{category ? (
 			<a
 				class="m3-blog-postmeta__link"
@@ -78,31 +121,46 @@ const {
 
 	{wordCount && (
 		<span class="m3-blog-postmeta__item">
-			<MetaIcon icon="material-symbols:article-outline-rounded" />
+			{hideIcons && <span class="m3-blog-postmeta__dot" aria-hidden="true">·</span>}
+			{!hideIcons && <MetaIcon icon="material-symbols:article-outline-rounded" />}
 			<span class="m3-blog-postmeta__text">{wordCount}</span>
 		</span>
 	)}
+	</div>
 
-	{!hideTags && (
-		<span class="m3-blog-postmeta__item">
-			<MetaIcon icon="material-symbols:tag-rounded" />
-			{tags.length > 0 ? (
+	{!hideTags && tags.length > 0 && (
+		<div class="m3-blog-postmeta__row m3-blog-postmeta__row--tags">
+			<span class="m3-blog-postmeta__item m3-blog-postmeta__item--tags">
+				{hideIcons && !category && published && !hideDate && <span class="m3-blog-postmeta__dot" aria-hidden="true">·</span>}
+				{!hideIcons && <MetaIcon icon="material-symbols:tag-rounded" />}
 				<span class="m3-blog-postmeta__tags">
 					{tags.map((t, i) => (
 						<Fragment>
-							{i > 0 && <span class="m3-blog-postmeta__sep" aria-hidden="true">/</span>}
+							{i > 0 && (
+								hideIcons ? (
+									<span class="m3-blog-postmeta__dot" aria-hidden="true">·</span>
+								) : (
+									<span class="m3-blog-postmeta__sep" aria-hidden="true">/</span>
+								)
+							)}
 							<a
 								class="m3-blog-postmeta__link"
 								href={t.href}
 								aria-label={`View all posts with the ${t.name} tag`}
-							>{t.name}</a>
+							>{hideIcons ? `#${t.name}` : t.name}</a>
 						</Fragment>
 					))}
 				</span>
-			) : (
+			</span>
+		</div>
+	)}
+	{!hideTags && tags.length === 0 && !hideIcons && (
+		<div class="m3-blog-postmeta__row m3-blog-postmeta__row--tags">
+			<span class="m3-blog-postmeta__item">
+				<MetaIcon icon="material-symbols:tag-rounded" />
 				<span class="m3-blog-postmeta__text">{noTagsLabel}</span>
-			)}
-		</span>
+			</span>
+		</div>
 	)}
 </div>
 
@@ -115,12 +173,76 @@ const {
 	gap: 0.5rem 0.75rem
 	color: var(--on-surface-variant)
 
+	&__row
+		display: inline-flex
+		flex-wrap: wrap
+		align-items: center
+		gap: 0.5rem 0.75rem
+
+	&--stacked
+		flex-direction: column
+		align-items: flex-start
+		justify-content: center
+		gap: 0.375rem
+		min-height: 2.5rem /* 与 Button small (40px) 同高，即使只有单行也绝对居中对齐 */
+
+		.m3-blog-postmeta__row
+			width: 100%
+
+	&--plain
+		gap: 0.375rem 0.5rem
+		color: var(--secondary)
+
+		.m3-blog-postmeta__row--tags
+			margin-left: auto
+
+		.m3-blog-postmeta__item
+			gap: 0.375rem
+
+		.m3-blog-postmeta__tags
+			gap: 0.375rem
+			font-family: var(--m3e-font-mono-family)
+
+		.m3-blog-postmeta__link
+			font-family: var(--m3e-font-mono-family)
+			color: var(--secondary)
+
+			&:hover
+				color: var(--primary)
+
+		.m3-blog-postmeta__dot
+			font-family: var(--m3e-font-sans)
+			color: var(--secondary)
+
+		.m3-blog-postmeta__badge-icon
+			&--pinned
+				color: var(--secondary)
+			&--encrypted
+				color: var(--secondary)
+
+	&__dot
+		user-select: none
+		color: var(--outline)
+		font-weight: 700
+		margin-right: 0.125rem
+
 	&__item
 		display: inline-flex
 		align-items: center
 		/* 徽标与文字间距由消费方控制（原子不自带 margin） */
 		gap: 0.5rem
 		min-width: 0
+
+		:global(.m3-meta-icon)
+			background: transparent
+			width: auto
+			height: auto
+			border-radius: 0
+			color: inherit
+
+			> :global(svg)
+				width: 1.125rem
+				height: 1.125rem
 
 	&__text
 		font: var(--m3e-type-body-medium)
@@ -146,4 +268,10 @@ const {
 		margin: 0 0.375rem
 		color: var(--outline-variant)
 		font-size: 0.875rem
+
+	&__badge-icon
+		&--pinned
+			color: var(--primary)
+		&--encrypted
+			color: var(--tertiary)
 </style>

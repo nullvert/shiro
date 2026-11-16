@@ -291,6 +291,7 @@ export const id: Translation = {
 	[Key.paginationLabel]: "Navigasi halaman",
 	[Key.tagsViewAll]: "Lihat semua tag",
 
+	[Key.authorMenu]: "Menu Penulis",
 	[Key.author]: "Penulis",
 	[Key.publishedAt]: "Diterbitkan pada",
 	[Key.lastUpdatedNotice]:

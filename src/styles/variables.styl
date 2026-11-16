@@ -9,7 +9,6 @@ rainbow-light = linear-gradient(to right, oklch(0.80 0.10 0), oklch(0.80 0.10 30
 rainbow-dark = linear-gradient(to right, oklch(0.70 0.10 0), oklch(0.70 0.10 30), oklch(0.70 0.10 60), oklch(0.70 0.10 90), oklch(0.70 0.10 120), oklch(0.70 0.10 150), oklch(0.70 0.10 180), oklch(0.70 0.10 210), oklch(0.70 0.10 240), oklch(0.70 0.10 270), oklch(0.70 0.10 300), oklch(0.70 0.10 330), oklch(0.70 0.10 360))
 
 :root
-  --radius-large 1rem
   --content-delay 150ms
 
 /* An util to define variables that vary with light and dark mode */
@@ -56,9 +55,9 @@ define({
   --line-color: var(--outline) var(--outline)
   --meta-divider: var(--on-surface-variant) var(--on-surface-variant)
 
-  /* 暗色卡片、表头与批注气泡都是 container-high，行内代码取 surface-bright 才能浮出 */
+  /* 暗色卡片、表头与批注气泡都是 container-high，行内代码取 surface-bright 才能浮出；深色模式文本需使用高对比度 on-surface */
   --inline-code-bg: var(--surface-container-low) var(--surface-bright)
-  --inline-code-color: var(--on-surface-variant) var(--on-surface-variant)
+  --inline-code-color: var(--on-surface-variant) var(--on-surface)
   --selection-bg: var(--primary-container) var(--primary-container)
   --codeblock-selection: var(--primary-container) var(--primary-container)
   /* 代码块跟随明暗：白天浅色（配合 github-light），夜间深色（配合 github-dark） */
@@ -161,19 +160,19 @@ define({
 
 /* M3 形状尺度与表面映射 */
 :root
-  --shape-corner-xs: 4px
-  --shape-corner-s: 8px
-  --shape-corner-m: 12px
-  --shape-corner-l: 16px
-  --shape-corner-xl: 28px
-  --shape-corner-full: 999px
+  --shape-corner-xs: 0.25rem
+  --shape-corner-s: 1rem
+  --shape-corner-m: 1rem
+  --shape-corner-l: 1rem
+  --shape-corner-xl: 0.75rem
+  --shape-corner-full: 0.5rem
   --radius-large: var(--shape-corner-l)
   --page-bg: var(--surface-container-low)
-  --card-bg: var(--surface-container-lowest)
+  --card-bg: var(--surface-variant)
   --float-panel-bg: var(--surface-container)
 :root.dark
   --page-bg: var(--surface)
-  --card-bg: var(--surface-container-high)
+  --card-bg: var(--surface-container)
   --float-panel-bg: var(--surface-container)
 
 /* ============================================================

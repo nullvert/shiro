@@ -70,7 +70,7 @@ const pageDescription = seriesConfig.description
 <MainGridLayout title={pageTitle} description={pageDescription} page="series">
 	<Card color="var(--card-bg)" radius="l" class="series-index px-8 py-6">
 		<PageHeader
-			icon="material-symbols:auto-stories-rounded"
+			icon="material-symbols:view-carousel-outline-rounded"
 			title={pageTitle}
 			subtitle={seriesSummary}
 		/>
@@ -82,7 +82,7 @@ const pageDescription = seriesConfig.description
 						href={getSeriesUrl(item.slug)}
 					>
 						<div class="series-index__head">
-							<MetaIcon icon="material-symbols:auto-stories-outline-rounded" />
+							<MetaIcon icon="material-symbols:view-carousel-outline-rounded" />
 							<span class="series-index__title">{item.title}</span>
 							<span
 								class="series-index__status"
@@ -178,8 +178,8 @@ const pageDescription = seriesConfig.description
 			color: var(--on-primary-container)
 
 		&[data-series-status="completed"]
-			background: var(--surface-container-highest)
-			color: var(--on-surface-variant)
+			background: var(--secondary-container)
+			color: var(--on-secondary-container)
 
 	&__meta
 		display: flex

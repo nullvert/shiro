@@ -1,22 +1,24 @@
 <script lang="ts">
 /**
- * 归档面板：分组切换（SegmentedButton，按年 / 按分类 / 按标签）+ 时间轴列表（组折叠见 ArchiveList 原子）。
+ * 归档面板：分组切换（Tabs，按年 / 按分类 / 按标签）+ 时间轴列表（组折叠见 ArchiveList 原子）。
  * URL 参数（?category= / ?tag= / ?uncategorized）是定向浏览视图：隐藏分组切换，
  * 顶部显示筛选头（面包屑）——索引页链接 › 当前筛选值，一键回溯到分类/标签索引页；
  * 无筛选时显示分组切换，可按年 / 按分类 / 按标签切换全量归档的分组。
  */
+
 import ArchiveList, {
 	type ArchiveGroup,
 	type ArchiveItem,
 } from "@components/atoms/blog/ArchiveList.svelte";
 import Card from "@components/atoms/display/Card.svelte";
-import SegmentedButton from "@components/atoms/selection/SegmentedButton.svelte";
+import Tabs from "@components/atoms/navigation/Tabs.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
 import { formatCalendarDate } from "@utils/content-date";
 import { getPostUrlBySlug, url } from "@utils/url-utils";
 import { onMount } from "svelte";
+import { siteConfig } from "@/config/siteConfig";
 
 interface Post {
 	slug: string;
@@ -34,7 +36,7 @@ let { sortedPosts = [] as Post[] }: { sortedPosts?: Post[] } = $props();
 let category = $state("");
 let tag = $state("");
 let uncategorized = $state(false);
-/** 分组维度（SegmentedButton 驱动）：year / category / tag，string 以匹配 bind:value */
+/** 分组维度：year / category / tag */
 let groupBy = $state<string>("year");
 let restoredCollapsed = $state<Record<string, boolean> | undefined>(undefined);
 
@@ -113,7 +115,15 @@ const filtered = $derived(
 );
 
 function formatDate(date: Date) {
-	return formatCalendarDate(date).slice(5);
+	try {
+		return new Intl.DateTimeFormat(siteConfig.lang || "ru", {
+			month: "short",
+			day: "numeric",
+			timeZone: "UTC",
+		}).format(date);
+	} catch {
+		return formatCalendarDate(date).slice(5);
+	}
 }
 
 function toItem(post: Post): ArchiveItem {
@@ -187,10 +197,10 @@ $effect(() => {
 	    隐藏分组切换，只留面包屑 + 筛选后时间轴；无筛选才显示分组切换。 -->
 	{#if !filterCrumb}
 		<div class="archive-panel__group-switch">
-			<SegmentedButton
-				options={groupOptions}
+			<Tabs
+				items={groupOptions}
 				bind:value={groupBy}
-				label={i18n(I18nKey.archiveGroup)}
+				variant="secondary"
 			/>
 		</div>
 	{/if}
@@ -237,9 +247,35 @@ $effect(() => {
 		padding: 1rem
 
 .archive-panel
-	/* 分组切换（SegmentedButton，站内 pill 语言）与下方时间轴之间的节奏 */
+	/* Вкладки навигации архива */
 	:global(&__group-switch)
-		margin-bottom: var(--m3e-space-4)
+		margin-bottom: var(--m3e-space-6)
+		border-bottom: 1px solid unquote("color-mix(in oklab, var(--outline-variant) 40%, transparent)")
+
+		:global(.m3-tabs)
+			background: transparent !important
+			box-shadow: none !important
+			height: 42px
+
+		:global(.m3-tabs__tab)
+			flex: 0 0 auto
+			padding: 0 1.25rem
+			font-size: 0.9375rem
+			font-weight: 500
+
+		:global(.m3-tabs__indicator)
+			height: 2px
+			border-radius: 2px 2px 0 0
+
+		@media (max-width: bp-sm - 1px)
+			:global(.m3-tabs__tab)
+				flex: 1 1 0
+				padding: 0 0.5rem
+				font-size: 0.8125rem
+
+			:global(.m3-tabs__tab-label)
+				overflow: visible
+				text-overflow: clip
 
 	:global(&__empty)
 		display: flex

@@ -32,7 +32,13 @@ const tagItems = tags.slice(0, DISPLAY_LIMIT).map((t) => ({
 	href: getTagUrl(t.name),
 }));
 ---
-<WidgetLayout name={i18n(I18nKey.tags)} id="tags" class={className} style={style}>
+<WidgetLayout
+	name={i18n(I18nKey.tags)}
+	icon="material-symbols:tag-rounded"
+	id="tags"
+	class={className}
+	style={style}
+>
 	<TagList tags={tagItems} />
 	{hasOverflow && (
 		<div slot="footer" class="widget-index-link">
