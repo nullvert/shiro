@@ -13,7 +13,8 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import type { MomentItem } from "@utils/content-utils";
 import { initFancybox } from "@utils/fancybox-handler";
-import { onMount } from "svelte";
+import { initMarkdownRuntime } from "@utils/markdown-runtime";
+import { onMount, tick } from "svelte";
 
 let {
 	moments = [] as MomentItem[],
@@ -31,10 +32,21 @@ let shownCount = $state(MOMENTS_PAGE_SIZE);
 const visibleMoments = $derived(moments.slice(0, shownCount));
 const hasMore = $derived(moments.length > shownCount);
 
-onMount(() => {
-	// 图片灯箱：client:only 岛挂载晚于全局 init，此处确保 [data-fancybox] 已绑定
+async function refreshRuntimes() {
+	await tick();
 	initFancybox();
+	void initMarkdownRuntime();
+}
+
+onMount(() => {
+	// 图片灯箱与 Markdown 运行时（代码高亮/复制、YouTube、折叠块、Mermaid 等）
+	void refreshRuntimes();
 });
+
+async function handleLoadMore() {
+	shownCount += MOMENTS_PAGE_SIZE;
+	await refreshRuntimes();
+}
 </script>
 
 <div class="moment-section">
@@ -54,7 +66,7 @@ onMount(() => {
 					variant="outlined"
 					icon="material-symbols:expand-more-rounded"
 					label={i18n(I18nKey.loadMore)}
-					onclick={() => (shownCount += MOMENTS_PAGE_SIZE)}
+					onclick={handleLoadMore}
 				/>
 			</div>
 		{/if}

@@ -111,7 +111,14 @@ export default {
 			}
 			frontmatter += `---\n\n`;
 
-			const markdownContent = frontmatter + rawText.trim() + "\n";
+			// Преобразуем ссылки на YouTube в нативную директиву ::youtube{id="..." title="..."}
+			// Поддерживает youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID
+			const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[^\s]*)/g;
+			let processedText = rawText.replace(youtubeRegex, (_match, videoId) => {
+				return `::youtube{id="${videoId}" title="YouTube video"}`;
+			});
+
+			const markdownContent = frontmatter + processedText.trim() + "\n";
 			const markdownFileName = `${fileDatePrefix}-${timeStampId}.md`;
 			const markdownFilePath = `src/content/moments/${markdownFileName}`;
 
