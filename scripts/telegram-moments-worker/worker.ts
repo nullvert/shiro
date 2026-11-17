@@ -96,9 +96,14 @@ export default {
 						`feat(moments): add photo ${imageFileName} via telegram bot`
 					);
 
+					// Безопасный alt без переносов строк для корректного YAML
+					const safeAlt = rawText
+						? rawText.replace(/[\r\n]+/g, " ").trim().slice(0, 40)
+						: "Moment photo";
+
 					uploadedImages.push({
 						src: `/images/moments/${imageFileName}`,
-						alt: rawText ? rawText.slice(0, 40) : "Moment photo",
+						alt: safeAlt,
 					});
 				}
 			}
