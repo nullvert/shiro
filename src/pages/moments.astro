@@ -6,6 +6,7 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { resolveImageAsset } from "@utils/asset-utils";
 import { getSortedMoments } from "@utils/content-utils";
 import { resolveI18nText } from "@utils/i18n-utils";
+import { getMarkdownStylesheetAssets } from "@utils/markdown-assets";
 import { url } from "@utils/url-utils";
 import { momentsConfig, profileConfig } from "@/config";
 
@@ -20,6 +21,10 @@ const pageDescription = resolveI18nText(
 );
 
 const moments = await getSortedMoments();
+const markdownStylesheetAssets = await getMarkdownStylesheetAssets({
+	schema: 1,
+	syntaxes: ["youtube", "bilibili"],
+});
 const authorName = momentsConfig.author?.name ?? profileConfig.name;
 const authorAvatarRaw = momentsConfig.author?.avatar ?? profileConfig.avatar ?? "";
 const authorUrl = momentsConfig.author?.url ?? url("/about/");
@@ -59,5 +64,6 @@ const author = {
 ---
 
 <MainGridLayout title={pageTitle} description={pageDescription} page="moments">
+    {markdownStylesheetAssets.map(({ pack, css }) => <style is:inline slot="head" data-swup-optional={pack} set:html={css}></style>)}
     <MomentSection {moments} {author} title={pageTitle} subtitle={pageDescription} client:visible></MomentSection>
 </MainGridLayout>

@@ -115,11 +115,17 @@ export default {
 			frontmatter += `---\n\n`;
 
 			// Преобразуем ссылки на YouTube в нативную директиву ::youtube{id="..." title="..."}
-			// Если ссылка идет отдельной строкой или текстом, заменяем ее на плеер, чтобы ссылка не дублировалась
 			const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[^\s]*)/g;
-			processedText = processedText.replace(youtubeRegex, (_match, videoId) => {
-				return `::youtube{id="${videoId}" title="YouTube video"}`;
-			});
+			const ytMatches = [...processedText.matchAll(youtubeRegex)];
+			for (const ytMatch of ytMatches) {
+				const fullMatch = ytMatch[0];
+				const videoId = ytMatch[1];
+				const videoTitle = await getYouTubeVideoTitle(videoId);
+				processedText = processedText.replace(
+					fullMatch,
+					`::youtube{id="${videoId}" title="${videoTitle.replace(/"/g, '\\"')}"}`
+				);
+			}
 
 			const markdownContent = frontmatter + processedText.trim() + "\n";
 			const markdownFileName = `${fileDatePrefix}-${timeStampId}.md`;
@@ -153,6 +159,24 @@ export default {
 		}
 	},
 };
+
+/**
+ * Получение названия видео из YouTube oEmbed API
+ */
+async function getYouTubeVideoTitle(videoId) {
+	try {
+		const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+		if (res.ok) {
+			const data = await res.json();
+			if (data && data.title) {
+				return data.title.trim();
+			}
+		}
+	} catch (e) {
+		console.warn("Failed to fetch YouTube oEmbed info:", e);
+	}
+	return "YouTube video";
+}
 
 /**
  * Получение прямой ссылки на файл из Telegram

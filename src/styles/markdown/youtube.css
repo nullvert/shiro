@@ -14,6 +14,20 @@
   border-radius: var(--shape-corner-l);
 }
 
+.m3-youtube__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity var(--m3e-duration-medium-2) var(--m3e-easing-standard);
+}
+
+.m3-youtube[data-youtube-state="active"] .m3-youtube__poster {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .m3-youtube__player {
   position: absolute;
   inset: 0;

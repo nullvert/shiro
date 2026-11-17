@@ -13,6 +13,13 @@ export function YouTubeComponent(properties, children) {
 	const { id, title, preload } = embed;
 
 	const stageChildren = [
+		h("img", {
+			class: "m3-youtube__poster",
+			src: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+			alt: title,
+			loading: "lazy",
+			decoding: "async",
+		}),
 		h(
 			"button",
 			{
