@@ -83,6 +83,7 @@ async function handleLoadMore() {
 
 .moment-section
 	display: block
+	margin-bottom: var(--m3e-space-4)
 
 	&__list
 		display: grid

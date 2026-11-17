@@ -41,9 +41,9 @@ export default {
 				return new Response("Empty update", { status: 200 });
 			}
 
-			// Парсим дату (если forward - берём оригинальную дату)
-			const origTimestamp = message.forward_origin?.date || message.forward_date || message.date;
-			const dateObj = origTimestamp ? new Date(origTimestamp * 1000) : new Date();
+			// Парсим дату (всегда время отправки боту в Telegram)
+			const timestamp = message.date || Math.floor(Date.now() / 1000);
+			const dateObj = new Date(timestamp * 1000);
 
 			// ISO 8601 формат для Astro Content Collection
 			const isoPublished = dateObj.toISOString();
@@ -59,6 +59,9 @@ export default {
 				matchedTags.push(match[1]);
 			}
 			const tags = Array.from(new Set(matchedTags));
+
+			// Очищаем текст от хэштегов, чтобы не дублировать их в тексте заметки
+			let processedText = rawText.replace(hashtagRegex, "").trim();
 
 			// Обработка фотографий
 			const uploadedImages = [];
@@ -86,8 +89,8 @@ export default {
 					);
 
 					// Безопасный alt без переносов строк для корректного YAML
-					const safeAlt = rawText
-						? rawText.replace(/[\r\n]+/g, " ").trim().slice(0, 40)
+					const safeAlt = processedText
+						? processedText.replace(/[\r\n]+/g, " ").trim().slice(0, 40)
 						: "Moment photo";
 
 					uploadedImages.push({
@@ -112,9 +115,9 @@ export default {
 			frontmatter += `---\n\n`;
 
 			// Преобразуем ссылки на YouTube в нативную директиву ::youtube{id="..." title="..."}
-			// Поддерживает youtube.com/watch?v=ID, youtu.be/ID, youtube.com/shorts/ID
+			// Если ссылка идет отдельной строкой или текстом, заменяем ее на плеер, чтобы ссылка не дублировалась
 			const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})(?:[^\s]*)/g;
-			let processedText = rawText.replace(youtubeRegex, (_match, videoId) => {
+			processedText = processedText.replace(youtubeRegex, (_match, videoId) => {
 				return `::youtube{id="${videoId}" title="YouTube video"}`;
 			});
 

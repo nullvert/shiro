@@ -21,7 +21,7 @@ import path from "node:path";
 import sharp from "sharp";
 import { CACHE_DIR_NAME } from "../../resolve/paths.ts";
 
-const WIDTHS = [192, 384, 640];
+const WIDTHS = [480, 960, 1440];
 const SUPPORTED_EXTENSIONS = new Set([
 	".avif",
 	".jpeg",
@@ -166,7 +166,7 @@ export async function generateMomentThumbnails({
 			await sharp(sourcePath)
 				.rotate()
 				.resize({ width, withoutEnlargement: true })
-				.webp({ quality: 64, effort: 5, smartSubsample: true })
+				.webp({ quality: 82, effort: 5, smartSubsample: true })
 				.toFile(outputPath);
 			generated += 1;
 		}

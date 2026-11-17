@@ -237,7 +237,7 @@ let momentsRendererPromise: ReturnType<
 	typeof siteMarkdownProcessor.createRenderer
 > | null = null;
 
-const MOMENT_THUMBNAIL_WIDTHS = [192, 384, 640] as const;
+const MOMENT_THUMBNAIL_WIDTHS = [480, 960, 1440] as const;
 
 function withMomentThumbnails(image: MomentImage): MomentImage {
 	const resolvedSrc = image.src.startsWith("/") ? url(image.src) : image.src;
@@ -261,7 +261,7 @@ function withMomentThumbnails(image: MomentImage): MomentImage {
 	return {
 		...image,
 		src: resolvedSrc,
-		thumbnailSrc: candidates.find(({ width }) => width === 384)?.src,
+		thumbnailSrc: candidates.find(({ width }) => width === 960)?.src ?? resolvedSrc,
 		thumbnailSrcset: candidates
 			.map(({ src, width }) => `${src} ${width}w`)
 			.join(", "),
